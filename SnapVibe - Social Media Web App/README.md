@@ -6,6 +6,16 @@ SnapVide is a feature-rich **Flask-based social media platform** where users can
 
 ---
 
+## 🛠️ Tech Stack
+
+- **Python**
+- **Flask**
+- **HTML / CSS / JS**
+- **Tailwind CSS**
+- **Firebase**
+
+---
+
 ## 🚀 Features
 
 - User registration and login  
