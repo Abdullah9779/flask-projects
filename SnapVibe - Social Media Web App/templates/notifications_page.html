@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .notification-unread {
+            background-color: #f3f4f6;
+        }
+        
+        .dark .notification-unread {
+            background-color: #1f2937;
+        }
+        
+        .notification-item:hover {
+            background-color: #f3f4f6;
+        }
+        
+        .dark .notification-item:hover {
+            background-color: #1f2937;
+        }
+        
+        .badge {
+            width: 8px;
+            height: 8px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Notifications Header -->
+    <div class="pt-16 pb-4">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Notifications</h1>
+            </div>
+            
+            <!-- Notification Filters 
+            <div class="flex space-x-4 mt-4 overflow-x-auto pb-2">
+                <a href="#" class="whitespace-nowrap px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium">
+                    All
+                </a>
+                <a href="#" class="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm">
+                    Likes
+                </a>
+                <a href="#" class="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm">
+                    Comments
+                </a>
+                <a href="#" class="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm">
+                    Follows
+                </a>
+                <a href="#" class="whitespace-nowrap px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg text-sm">
+                    Mentions
+                </a>
+            </div> -->
+        </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 pb-20">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+            <!-- Notification Items -->
+            <div class="divide-y divide-gray-200 dark:divide-gray-700">
+                <!-- Liked Notification 1 -->
+                {% for i in notifications_id %}
+                {% if notifications[i]["notifications"] == "Like post" %}
+                <a href="/view/{{ notifications[i]["post_id"] }}" class="notification-item block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 relative">
+                            <img class="h-10 w-10 rounded-full" src="https://snapvibe.share.zrok.io/static/profile_image/{{ notifications[i]["user_id"] }}.png" alt="User avatar">
+                            <div class="absolute -top-1 -right-1 bg-purple-600 rounded-full p-1">
+                                <i class="fas fa-heart text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                    <span class="font-semibold">{{ notifications[i]["username"] }}</span> liked your post
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ notifications[i]["timestamp"]|time_ago }}</p>
+                        </div>
+                        
+                    {% if notifications[i]["media"] != "None" %}
+                        <div class="ml-4 flex-shrink-0">
+                            <img class="h-10 w-10 rounded-md object-cover" src="{{ notifications[i]["media"] }}" alt="Post preview">
+                        </div>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endif %}
+
+                {% if notifications[i]["notifications"] == "Remove Like post" %}
+                <a href="/view/{{ notifications[i]["post_id"] }}" class="notification-item block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 relative">
+                            <img class="h-10 w-10 rounded-full" src="https://snapvibe.share.zrok.io/static/profile_image/{{ notifications[i]["user_id"] }}.png" alt="User avatar">
+                            <div class="absolute -top-1 -right-1 bg-purple-600 rounded-full p-1">
+                                <i class="far fa-heart text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                    <span class="font-semibold">{{ notifications[i]["username"] }}</span> remove there liked on your post
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ notifications[i]["timestamp"]|time_ago }}</p>
+                        </div>
+                        {% if notifications[i]["media"] != "None" %}
+                        <div class="ml-4 flex-shrink-0">
+                            <img class="h-10 w-10 rounded-md object-cover" src="{{ notifications[i]["media"] }}" alt="Post preview">
+                        </div>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endif %}
+                {% if notifications[i]["notifications"] == "comment" %}
+                <a href="/view/{{ notifications[i]["post_id"] }}" class="notification-item block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 relative">
+                            <img class="h-10 w-10 rounded-full" src="https://snapvibe.share.zrok.io/static/profile_image/{{ notifications[i]["user_id"] }}.png" alt="User avatar">
+                            <div class="absolute -top-1 -right-1 bg-purple-600 rounded-full p-1">
+                                <i class="fas fa-comment mr-2 text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                    <span class="font-semibold">{{ notifications[i]["username"] }}</span> comments on your post
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ notifications[i]["comment"] }}</p>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ notifications[i]["timestamp"]|time_ago }}</p>
+                        </div>
+                        {% if notifications[i]["media"] != "None" and notifications[i]["media"] != "" %}
+                        <div class="ml-4 flex-shrink-0">
+                            <img class="h-10 w-10 rounded-md object-cover" src="{{ notifications[i]["media"] }}" alt="Post preview">
+                        </div>
+                        {% endif %}
+                    </div>
+                </a>
+                {% endif %}
+                {% if notifications[i]["notifications"] == "Follow" %}
+                <a href="/user/{{ notifications[i]["username"] }}" class="notification-item block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 relative">
+                            <img class="h-10 w-10 rounded-full" src="https://snapvibe.share.zrok.io/static/profile_image/{{ notifications[i]["user_id"] }}.png" alt="User avatar">
+                            <div class="absolute -top-1 -right-1 bg-purple-600 rounded-full p-1">
+                                <i class="fas fa-user-plus text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                    <span class="font-semibold">{{ notifications[i]["username"] }}</span> started following you
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ notifications[i]["timestamp"]|time_ago }}</p>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+
+                {% if notifications[i]["notifications"] == "Unfollow" %}
+                <a href="/user/{{ notifications[i]["username"] }}" class="notification-item block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 relative">
+                            <img class="h-10 w-10 rounded-full" src="https://snapvibe.share.zrok.io/static/profile_image/{{ notifications[i]["user_id"] }}.png" alt="User avatar">
+                            <div class="absolute -top-1 -right-1 bg-purple-600 rounded-full p-1">
+                                <i class="fas fa-user-minus text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                    <span class="font-semibold">{{ notifications[i]["username"] }}</span> unfollowed you
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ notifications[i]["timestamp"]|time_ago }}</p>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+
+                {% if notifications[i]["notifications"] == "Like comment" %}
+                <a href="/view/{{ notifications[i]["post_id"] }}" class="notification-item block px-4 py-3 hover:bg-gray-50 dark:hover:bg-gray-700 transition duration-150">
+                    <div class="flex items-start">
+                        <div class="flex-shrink-0 relative">
+                            <img class="h-10 w-10 rounded-full" src="https://snapvibe.share.zrok.io/static/profile_image/{{ notifications[i]["user_id"] }}.png" alt="User avatar">
+                            <div class="absolute -top-1 -right-1 bg-purple-600 rounded-full p-1">
+                                <i class="fas fa-heart text-white text-xs"></i>
+                            </div>
+                        </div>
+                        <div class="ml-3 flex-1">
+                            <div class="flex items-center justify-between">
+                                <p class="text-sm font-medium text-gray-900 dark:text-white">
+                                    <span class="font-semibold">{{ notifications[i]["username"] }}</span> Like Your comment
+                                </p>
+                            </div>
+                            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">{{ notifications[i]["timestamp"]|time_ago }}</p>
+                        </div>
+                    </div>
+                </a>
+                {% endif %}
+
+                {% endfor %}
+                
+                
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around py-2">
+        <a href="/" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">Home</span>
+        </a>
+        <a href="/ai" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-robot text-xl"></i>
+            <span class="text-xs mt-1">AI</span>
+        </a>
+        <a href="/create-post" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-plus-square text-xl"></i>
+            <span class="text-xs mt-1">Create</span>
+        </a>
+        <a href="/notifications" class="flex flex-col items-center text-purple-600 dark:text-purple-400">
+            <i class="fas fa-bell text-xl"></i>
+            <span class="text-xs mt-1">Notifications</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-xs mt-1">Profile</span>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        });
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Mark notifications as read when clicked
+        document.querySelectorAll('.notification-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const badge = this.querySelector('.badge');
+                if (badge) {
+                    badge.remove();
+                    this.classList.remove('notification-unread');
+                }
+            });
+        });
+
+        // Mark all as read button
+        document.querySelector('button').addEventListener('click', function() {
+            document.querySelectorAll('.notification-unread').forEach(item => {
+                item.classList.remove('notification-unread');
+                const badge = item.querySelector('.badge');
+                if (badge) badge.remove();
+            });
+        });
+    </script>
+</body>
+</html>

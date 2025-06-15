@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Email | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .auth-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .input-focus:focus-within {
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+            border-color: #8b5cf6;
+        }
+        
+        .btn-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .shake {
+            animation: shake 0.5s ease-in-out;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-5px); }
+            40%, 80% { transform: translateX(5px); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Animated Background Circles -->
+    <div class="fixed inset-0 overflow-hidden -z-10">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-purple-300 rounded-full opacity-10 filter blur-xl"></div>
+        <div class="absolute bottom-0 right-0 w-64 h-64 bg-indigo-300 rounded-full opacity-10 filter blur-xl"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Verification Section -->
+    <section class="min-h-screen flex items-center justify-center px-4 py-20">
+        <div class="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+            <!-- Header -->
+            <div class="auth-gradient p-8 text-center">
+                <div class="floating inline-block">
+                    <i class="fas fa-envelope text-white text-6xl"></i>
+                </div>
+                <h1 class="text-3xl font-bold text-white mt-4">Verify Your Email</h1>
+                <p class="text-purple-200 mt-2">Enter your details to receive a verification link</p>
+            </div>
+            
+            <!-- Verification Form -->
+            <div class="p-8">
+                <form id="verificationForm" class="space-y-6">
+                    <!-- Email Input -->
+                    <div class="input-focus border border-gray-200 dark:border-gray-700 rounded-lg transition duration-300">
+                        <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 px-3 pt-2">Email Address</label>
+                        <input 
+                            type="email" 
+                            id="email" 
+                            name="email" 
+                            required 
+                            placeholder="your@email.com" 
+                            class="w-full px-3 pb-2 bg-transparent focus:outline-none dark:text-white"
+                        >
+                    </div>
+                    
+                    <!-- Password Input -->
+                    <div class="input-focus border border-gray-200 dark:border-gray-700 rounded-lg transition duration-300">
+                        <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 px-3 pt-2">Password</label>
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            required 
+                            placeholder="••••••••" 
+                            class="w-full px-3 pb-2 bg-transparent focus:outline-none dark:text-white"
+                        >
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <button 
+                        type="submit" 
+                        id="submitBtn"
+                        class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-semibold btn-hover transition duration-300"
+                    >
+                        Send Verification Link
+                    </button>
+                </form>
+                
+                <!-- Status Message -->
+                <div id="statusMessage" class="mt-4 hidden">
+                    <div class="p-3 rounded-lg text-sm" id="messageContent"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-800 py-6 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                &copy; 2025 SnapVide. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        });
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Form Submission with Fetch API
+        document.getElementById('verificationForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const submitBtn = document.getElementById('submitBtn');
+            const statusMessage = document.getElementById('statusMessage');
+            const messageContent = document.getElementById('messageContent');
+            
+            // Basic validation
+            if (!email.includes('@') || !email.includes('.')) {
+                showMessage('Please enter a valid email address', 'error');
+                document.getElementById('email').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('email').classList.remove('shake');
+                }, 500);
+                return;
+            }
+            
+            if (password.length < 6) {
+                showMessage('Password must be at least 6 characters', 'error');
+                document.getElementById('password').classList.add('shake');
+                setTimeout(() => {
+                    document.getElementById('password').classList.remove('shake');
+                }, 500);
+                return;
+            }
+            
+            // Prepare data for POST request
+            const formData = {
+                email: email,
+                password: password
+            };
+            
+            // Show loading state
+            submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+            submitBtn.disabled = true;
+            
+            try {
+                // Replace with your actual API endpoint
+                const response = await fetch('/send-verification', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage('Verification link sent successfully! Please check your email.', 'success');
+                    // Optional: Redirect or clear form
+                    // document.getElementById('verificationForm').reset();
+                } else {
+                    showMessage(data.message || 'Failed to send verification link', 'error');
+                }
+            } catch (error) {
+                showMessage('Network error. Please try again later.', 'error');
+                console.error('Error:', error);
+            } finally {
+                submitBtn.innerHTML = 'Send Verification Link';
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // Helper function to show status messages
+        function showMessage(message, type) {
+            const statusMessage = document.getElementById('statusMessage');
+            const messageContent = document.getElementById('messageContent');
+            
+            statusMessage.classList.remove('hidden');
+            messageContent.textContent = message;
+            
+            // Set appropriate styling based on message type
+            statusMessage.className = 'mt-4';
+            messageContent.className = 'p-3 rounded-lg text-sm';
+            
+            if (type === 'success') {
+                messageContent.classList.add('bg-green-100', 'text-green-700', 'dark:bg-green-900', 'dark:text-green-200');
+            } else if (type === 'error') {
+                messageContent.classList.add('bg-red-100', 'text-red-700', 'dark:bg-red-900', 'dark:text-red-200');
+            }
+            
+            // Auto-hide after 5 seconds
+            setTimeout(() => {
+                statusMessage.classList.add('hidden');
+            }, 5000);
+        }
+
+        // Make navbar sticky with shadow on scroll
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg', 'bg-opacity-90');
+            } else {
+                nav.classList.remove('shadow-lg', 'bg-opacity-90');
+            }
+        });
+    </script>
+</body>
+</html>

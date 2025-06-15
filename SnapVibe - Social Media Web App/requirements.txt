@@ -1,0 +1,6 @@
+Flask
+firebase-admin
+pyrebase4
+requests
+groq
+Werkzeug

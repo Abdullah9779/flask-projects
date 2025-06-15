@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verify Your Email | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .auth-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .floating {
+            animation: floating 3s ease-in-out infinite;
+        }
+        
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
+        
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .btn-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .btn-hover:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .envelope-animation {
+            animation: envelope-shake 0.5s ease-in-out 3;
+        }
+        
+        @keyframes envelope-shake {
+            0%, 100% { transform: translateX(0) rotate(0deg); }
+            20% { transform: translateX(-5px) rotate(-5deg); }
+            40% { transform: translateX(5px) rotate(5deg); }
+            60% { transform: translateX(-5px) rotate(-5deg); }
+            80% { transform: translateX(5px) rotate(5deg); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Animated Background Circles -->
+    <div class="fixed inset-0 overflow-hidden -z-10">
+        <div class="absolute top-0 left-0 w-64 h-64 bg-purple-300 rounded-full opacity-10 filter blur-xl"></div>
+        <div class="absolute bottom-0 right-0 w-64 h-64 bg-indigo-300 rounded-full opacity-10 filter blur-xl"></div>
+    </div>
+
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Verification Message Section -->
+    <section class="min-h-screen flex items-center justify-center px-4 py-20">
+        <div class="max-w-md w-full bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden text-center">
+            <!-- Animated Header -->
+            <div class="auth-gradient p-8">
+                <div class="floating inline-block envelope-animation">
+                    <i class="fas fa-envelope text-white text-6xl"></i>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="p-8 space-y-6">
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Verify Your Email Address</h2>
+                
+                <p class="text-gray-600 dark:text-gray-300">
+                    We've sent a verification link to <span class="font-medium text-purple-600 dark:text-purple-400">user@example.com</span>
+                </p>
+                
+                <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 text-left">
+                    <div class="flex items-start">
+                        <i class="fas fa-info-circle text-blue-500 mt-1 mr-2"></i>
+                        <p class="text-sm text-blue-700 dark:text-blue-300">
+                            Please check your inbox and click the verification link to activate your account.
+                            <br><br>
+                            <span class="font-medium">Didn't receive the email?</span> Check your spam folder or request a <a href="/send-verification" >new link.</a>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="pt-4">
+                    <a href="/sign-in" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-semibold btn-hover transition duration-300">
+                        Sign In
+                    </a>
+                </div>
+                
+                <div class="text-sm text-gray-500 dark:text-gray-400">
+                    <p>Wrong email? <a href="/sign-up" class="text-purple-600 dark:text-purple-400 hover:underline">Sign up again</a></p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-100 dark:bg-gray-800 py-6 px-4">
+        <div class="max-w-7xl mx-auto text-center">
+            <p class="text-gray-600 dark:text-gray-400 text-sm">
+                &copy; 2025 SnapVide. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script>
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        });
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Resend Button Functionality
+        document.getElementById('resendBtn').addEventListener('click', async function() {
+            const btn = this;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Sending...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch('/verifaction-link', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ resend: 'True' }) // Replace with the actual user email
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    btn.innerHTML = '<i class="fas fa-check mr-2"></i> Email Sent!';
+                } else {
+                    btn.innerHTML = 'Resend Verification Email';}
+
+            } catch (error) {
+                alert('Error sending email. Please try again later.');
+                btn.innerHTML = 'Resend Verification Email';
+            }
+
+            // Reset button after 3 seconds
+            setTimeout(() => {
+                btn.innerHTML = 'Resend Verification Email';
+                btn.disabled = false;
+            }, 3000);
+        });
+
+
+        // Make navbar sticky with shadow on scroll
+        window.addEventListener('scroll', function() {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-lg', 'bg-opacity-90');
+            } else {
+                nav.classList.remove('shadow-lg', 'bg-opacity-90');
+            }
+        });
+    </script>
+</body>
+</html>

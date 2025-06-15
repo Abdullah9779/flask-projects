@@ -1,0 +1,259 @@
+function renderPosts(posts) {
+    const postsContainer = document.getElementById("postsContainer");
+    const currentUserId = "{{ user_id }}"; // inject from Flask
+    const saved_posts_id_list = "{{ saved_posts_id_list }}";
+
+    Object.values(posts).forEach(post => {
+        if (post.privacy === "public") {
+            const postElement = document.createElement("div");
+            postElement.classList.add("post-card", "bg-white", "dark:bg-gray-800", "rounded-xl", "shadow", "overflow-hidden", "transition", "duration-300", "post-hover", "mb-6");
+
+            // Determine if the current user has liked this post
+            const isLiked = post.likes && post.likes.hasOwnProperty(currentUserId);
+            // Determine if the current user has saved this post
+            const isSaved = saved_posts_id_list.includes(post.post_id);
+
+            postElement.innerHTML = `
+                <!-- Post Header -->
+                <div class="flex items-center justify-between p-4">
+                    <div class="flex items-center space-x-3">
+                        <div class="w-10 h-10 rounded-full overflow-hidden">
+                            <img src="${post.profile_pic}" alt="User" class="w-full h-full object-cover">
+                        </div>
+                        <div>
+                            <a href="/user/${post.username}" class="font-medium">${post.username}</a>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">${formatTimeAgo(post.timestamp)}</p>
+                        </div>
+                    </div>
+                    <div class="relative ml-auto">
+                        <!-- Three Dots Button -->
+                        <button id="${post.post_id}" onclick="toggleMenu(this)" class="ml-auto text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-ellipsis-h"></i>
+                        </button>
+                        <!-- Dropdown Menu -->
+                        <div class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-md rounded-md py-2 z-20">
+                            <a href="#addstory" onclick="sendPostRequest('addstory', this)" class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Delete Post</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Post Content -->
+                ${post.type === "image" ? `
+                <div class="px-4 pb-3">
+                    <img src="${post.media}" alt="image" class="w-full h-auto rounded-lg">
+                </div>
+                ` : ""}
+                
+                ${post.type === "video" ? `
+                <div class="w-full aspect-square bg-gray-200 overflow-hidden relative">
+                    <video id="video-${post.post_id}" 
+                           class="w-full h-full"
+                           playsinline 
+                           muted 
+                           loop>
+                        <source src="${post.media}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <div id="play-btn-${post.post_id}" class="play-button bg-black bg-opacity-50 rounded-full w-14 h-14 flex items-center justify-center opacity-0 transition-opacity duration-300">
+                            <i class="fas fa-play text-white text-2xl"></i>
+                        </div>
+                    </div>
+                    <button id="mute-btn-${post.post_id}" class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                        <i class="fas fa-volume-mute"></i>
+                    </button>
+                </div>
+                ` : ""}
+                
+                ${post.type === "text" ? `
+                <div class="px-4 pb-3">
+                    <p class="text-gray-800 dark:text-gray-200 mb-3">${post.content}</p>
+                </div>
+                ` : ""}
+
+                <!-- Post Actions -->
+                <div class="p-4">
+                    <div class="flex justify-between mb-2">
+                        <div class="flex space-x-4">
+                            <button id="${post.post_id}####${post.user_id}####None" onclick="likepost(this.id), toggleLike(this)" class="like-btn text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                                ${isLiked ? `<i class="fas fa-heart text-red-500"></i>` : `<i class="far fa-heart"></i>`}
+                            </button>
+
+                            <button id="${post.post_id}" onclick="showComments('${post.post_id}', '${post.media}', '${post.user_id}')" class="text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                                <i class="far fa-comment"></i>
+                            </button>
+
+                            <button id="/share/${post.post_id}" onclick="sharePhoto(this.id)" class="text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                                <i class="far fa-paper-plane"></i>
+                            </button>
+                        </div>
+                        <button data-post-id="${post.post_id}" 
+                                onclick="savePost(this)" 
+                                class="bookmark-btn text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                            ${isSaved ? `<i class="fas fa-bookmark"></i>` : `<i class="far fa-bookmark"></i>`}
+                        </button>
+                    </div>
+
+                    <!-- Likes -->
+                    <div class="mb-1">
+                        <span class="font-semibold likes-count">${post.likes ? Object.keys(post.likes).length : 0}</span> likes
+                    </div>
+
+                    <!-- Caption -->
+                    ${post.type !== "text" ? `
+                    <div class="mb-1">
+                        <p><span class="font-semibold">${post.username} </span> ${post.content}</p>
+                    </div>
+                    ` : ""}
+
+                    <!-- Comments -->
+                    ${post.comments && post.comments.length > 1 ? `
+                    <div class="mb-1">
+                        <button class="text-gray-500 dark:text-gray-400 text-sm hover:text-black dark:hover:text-white">
+                            View all ${post.comments.length} comments
+                        </button>
+                    </div>
+                    ` : ""}
+
+                    <!-- Time -->
+                    <div>
+                        <p class="text-gray-400 text-xs uppercase">${formatTimeAgo(post.timestamp)}</p>
+                    </div>
+                </div>
+            `;
+
+            postsContainer.appendChild(postElement);
+
+            // Add event listeners for video controls
+            if (post.type === "video") {
+                const videoId = `video-${post.post_id}`;
+                const video = document.getElementById(videoId);
+                const muteBtn = document.getElementById(`mute-btn-${post.post_id}`);
+                const playBtn = document.getElementById(`play-btn-${post.post_id}`);
+                const container = video.parentElement;
+
+                // Mute/unmute functionality
+                muteBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    video.muted = !video.muted;
+                    muteBtn.innerHTML = video.muted 
+                        ? '<i class="fas fa-volume-mute"></i>' 
+                        : '<i class="fas fa-volume-up"></i>';
+                });
+
+                // Play/pause functionality
+                container.addEventListener('click', () => {
+                    if (video.paused) {
+                        video.play().catch(error => {
+                            // If autoplay is blocked, mute and try again
+                            video.muted = true;
+                            video.play();
+                            muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                        });
+                        playBtn.classList.add('opacity-0');
+                    } else {
+                        video.pause();
+                        playBtn.classList.remove('opacity-0');
+                        playBtn.querySelector('i').className = 'fas fa-play text-white text-2xl';
+                    }
+                });
+
+                // Show play button when paused
+                video.addEventListener('pause', () => {
+                    playBtn.classList.remove('opacity-0');
+                    playBtn.querySelector('i').className = 'fas fa-play text-white text-2xl';
+                });
+
+                // Show pause button when playing
+                video.addEventListener('play', () => {
+                    playBtn.classList.add('opacity-0');
+                });
+
+                // Hover effects
+                container.addEventListener('mouseenter', () => {
+                    if (video.paused) {
+                        playBtn.classList.remove('opacity-0');
+                    }
+                });
+                
+                container.addEventListener('mouseleave', () => {
+                    if (!video.paused) {
+                        playBtn.classList.add('opacity-0');
+                    }
+                });
+            }
+        }
+    });
+
+    // Setup intersection observer for newly added videos
+    setupVideoObserver();
+}
+
+// Video intersection observer setup
+function setupVideoObserver() {
+    const options = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.7 // How much of the video needs to be visible (70% in this case)
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const video = entry.target;
+            const postId = video.id.replace('video-', '');
+            const playBtn = document.getElementById(`play-btn-${postId}`);
+            
+            if (entry.isIntersecting) {
+                // Video is in view - play it
+                video.play().catch(error => {
+                    // Autoplay was prevented, mute and try again
+                    video.muted = true;
+                    video.play();
+                    document.getElementById(`mute-btn-${postId}`).innerHTML = '<i class="fas fa-volume-mute"></i>';
+                });
+                if (playBtn) playBtn.classList.add('opacity-0');
+            } else {
+                // Video is out of view - pause it
+                video.pause();
+                if (playBtn) {
+                    playBtn.classList.remove('opacity-0');
+                    playBtn.querySelector('i').className = 'fas fa-play text-white text-2xl';
+                }
+            }
+        });
+    }, options);
+
+    // Observe all video elements
+    document.querySelectorAll('video').forEach(video => {
+        observer.observe(video);
+        
+        // Reset when video ends
+        video.addEventListener('ended', () => {
+            video.currentTime = 0;
+            video.play();
+        });
+    });
+}
+
+// Toggle play/pause for video (called from onclick in HTML)
+function toggleplay_reel(id) {
+    const video = document.getElementById(id);
+    const postId = id.replace('video-', '');
+    const playBtn = document.getElementById(`play-btn-${postId}`);
+    
+    if (video.paused) {
+        video.play().catch(error => {
+            // If autoplay is blocked, mute and try again
+            video.muted = true;
+            video.play();
+            document.getElementById(`mute-btn-${postId}`).innerHTML = '<i class="fas fa-volume-mute"></i>';
+        });
+        if (playBtn) playBtn.classList.add('opacity-0');
+    } else {
+        video.pause();
+        if (playBtn) {
+            playBtn.classList.remove('opacity-0');
+            playBtn.querySelector('i').className = 'fas fa-play text-white text-2xl';
+        }
+    }
+}

@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saved Posts | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .story-ring {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+        
+        .post-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+        }
+        
+        .sidebar-item.active {
+            background-color: rgba(124, 58, 237, 0.1);
+            border-left: 3px solid #7c3aed;
+        }
+        
+        .like-animation {
+            animation: like 0.5s ease;
+        }
+        
+        @keyframes like {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .dark .post-card {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        
+        .dark .trending-card {
+            background-color: #1f2937;
+        }
+
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background-color: #7c3aed;
+            color: white;
+        }
+
+        .filter-active {
+            background-color: #7c3aed;
+            color: white;
+        }
+        
+        .dark .filter-active {
+            background-color: #8b5cf6;
+        }
+        
+        .post-type-filter {
+            display: none;
+        }
+        
+        .post-type-filter.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Main Container -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="hidden md:flex md:flex-shrink-0">
+            <div class="flex flex-col w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <!-- Logo -->
+                <a href="/" >
+                <div class="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-700">
+                    <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                </div>
+            </a>
+                <!-- Navigation -->
+                <div class="flex flex-col flex-grow px-4 py-4 overflow-y-auto">
+                    <nav class="flex-1 space-y-2">
+                        <a href="/" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-home mr-3 "></i>
+                            Home
+                        </a>
+                        <a href="/ai" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-robot mr-3"></i>
+                            AI Assistant
+                        </a>
+                        <a href="/notifications" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-bell mr-3"></i>
+                            Notifications
+                        </a>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-envelope mr-3"></i>
+                            Messages
+                        </a>
+                        <a href="/saved-posts" class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-900 dark:text-white">
+                            <i class="fas fa-bookmark mr-3 text-purple-600"></i>
+                            Saved Posts
+                        </a>
+                        <a href="/profile" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-user mr-3"></i>
+                            Profile
+                        </a>
+                    </nav>
+                    
+                    <!-- Create Post Button -->
+                    <a href="create-post"><button class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300">
+                        <i class="fas fa-plus mr-2"></i> Create Post
+                    </button></a>
+                    
+                    <!-- Dark Mode Toggle -->
+                    <div class="mt-auto mb-4">
+                        <button id="darkModeToggle" class="w-full flex items-center justify-center px-4 py-2 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <i class="fas fa-moon dark:hidden mr-2"></i>
+                            <i class="fas fa-sun hidden dark:block mr-2"></i>
+                            <span id="darkModeText">Dark Mode</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Mobile Header -->
+            <header class="md:hidden flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div class="flex items-center">
+                    <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="mobileMenuButton">
+                        <i class="fas fa-bars text-gray-600 dark:text-gray-300 text-xl"></i>
+                    </button>
+                    <button id="mobileDarkModeToggle">
+                        <i class="fas fa-moon dark:hidden text-gray-600"></i>
+                        <i class="fas fa-sun hidden dark:block text-gray-300"></i>
+                    </button>
+                </div>
+            </header>
+            
+            <!-- Mobile Sidebar (Hidden) -->
+            <div id="mobileSidebar" class="hidden md:hidden fixed inset-0 z-50 bg-black bg-opacity-50">
+                <div class="flex flex-col w-4/5 h-full bg-white dark:bg-gray-800">
+                    <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center">
+                            <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                            <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                        </div>
+                        <button id="closeMobileMenu">
+                            <i class="fas fa-times text-gray-600 dark:text-gray-300"></i>
+                        </button>
+                    </div>
+                    <nav class="flex-1 p-4 space-y-2">
+                        <a href="/" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-home mr-3"></i>
+                            Home
+                        </a>
+                        <a href="/ai" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-robot mr-3"></i>
+                            AI Assistant
+                        </a>
+                        <a href="/notifications" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-bell mr-3"></i>
+                            Notifications
+                        </a>
+                        <a href="#" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-envelope mr-3"></i>
+                            Messages
+                        </a>
+                        <a href="/saved-posts" class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-900 dark:text-white">
+                            <i class="fas fa-bookmark mr-3 text-purple-600"></i>
+                            Saved Posts
+                        </a>
+                        <a href="/profile" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-user mr-3"></i>
+                            Profile
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="max-w-4xl mx-auto p-4 md:p-6 mb-16">
+                    
+                    <!-- Create Post Card -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+                        <div class="flex items-center space-x-3">
+                            <h1 class="text-xl text-gray-500 dark:text-gray-400">Saved Posts</h1>
+                        </div>
+                        <div class="flex justify-between mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+                            <button class="filter-btn flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400" data-type="all">
+                                <i class="fas fa-th-large mr-2"></i> All
+                            </button>
+                            <button class="filter-btn flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400" data-type="image">
+                                <i class="fas fa-image mr-2"></i> Photos
+                            </button>
+                            <button class="filter-btn flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400" data-type="video">
+                                <i class="fas fa-video mr-2"></i> Videos
+                            </button>
+                            <button class="filter-btn flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400" data-type="text">
+                                <i class="fas fa-align-left mr-2"></i> Text
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+                    
+        
+                    
+                    <!-- Posts -->
+                    {% if saved_posts_data %}
+                    <div class="space-y-6">
+                        <!-- All Posts (default view) -->
+                        <div id="all-posts" class="post-type-filter active mb-8">
+                            {% for i in saved_posts_data %}
+                                {% if saved_posts_data[i]["privacy"] == "public"%}
+                                {% include 'post_template3.html' %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Image Posts -->
+                        <div id="image-posts" class="post-type-filter mb-8">
+                            {% for i in saved_posts_data %}
+                                {% if saved_posts_data[i]["type"] == "image" and saved_posts_data[i]["privacy"] == "public" %}
+                                    {% include 'post_template3.html' %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Video Posts -->
+                        <div id="video-posts" class="post-type-filter mb-8">
+                            {% for i in saved_posts_data %}
+                                {% if saved_posts_data[i]["type"] == "video" and saved_posts_data[i]["privacy"] == "public" %}
+                                    {% include 'post_template3.html' %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                        
+                        <!-- Text Posts -->
+                        <div id="text-posts" class="post-type-filter mb-8">
+                            {% for i in saved_posts_data %}
+                                {% if saved_posts_data[i]["type"] == "text" and saved_posts_data[i]["privacy"] == "public" %}
+                                    {% include 'post_template3.html' %}
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dialog box for comments (initially hidden) -->
+<div id="commentsDialog" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+        <!-- Header -->
+        <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+            <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Comments</h3>
+            <button onclick="closeCommentsDialog()" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                <i class="fas fa-times text-gray-500 dark:text-gray-400 text-lg"></i>
+            </button>
+        </div>
+        
+        <!-- Comments Container -->
+        <div id="commentsContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+            <!-- Example comment (will be replaced with dynamic content) -->
+            <div class="comment-template hidden">
+                <div class="flex gap-3">
+                    <img class="w-10 h-10 rounded-full object-cover" alt="User profile">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-2">
+                            <span class="font-semibold text-gray-900 dark:text-white">USERNAME</span>
+                            <span class="text-xs text-gray-500 dark:text-gray-400">TIMESTAMP</span>
+                        </div>
+                        <p class="mt-1 text-gray-800 dark:text-gray-200">COMMENT_TEXT</p>
+                        <div class="mt-2 flex gap-4 text-sm text-gray-500 dark:text-gray-400">
+                            <button class="hover:text-purple-600 dark:hover:text-purple-400">Like</button>
+                            <button class="hover:text-purple-600 dark:hover:text-purple-400">Reply</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Loading state -->
+            <div id="commentsLoading" class="flex justify-center py-8">
+                <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+            </div>
+            
+            <!-- Empty state -->
+            <div id="commentsEmpty" class="hidden text-center py-8">
+                <i class="far fa-comment-dots text-3xl text-gray-400 mb-2"></i>
+                <p class="text-gray-500 dark:text-gray-400">No comments yet</p>
+                <p class="text-sm text-gray-400 mt-1">Be the first to comment!</p>
+            </div>
+        </div>
+        
+        <!-- New Comment Input -->
+        <div class="p-4 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+            <div class="flex gap-3">
+                <img id="currentUserAvatar" class="w-10 h-10 rounded-full object-cover" src="https://snapvibe.share.zrok.io/static/profile_image/{{ local_id }}.png" alt="Your profile">
+                <div class="flex-1">
+                    <textarea id="newCommentText" 
+                            class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                            placeholder="Write a comment..." 
+                            rows="1"></textarea>
+                    <div class="flex justify-between items-center mt-2">
+                        <button onclick="postComment()" 
+                                id="postCommentBtn"
+                                disabled
+                                class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Post
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around py-2">
+        <a href="/" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">Home</span>
+        </a>
+        <a href="/ai" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-robot text-xl"></i>
+            <span class="text-xs mt-1">AI</span>
+        </a>
+        <a href="/create-post" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-plus-square text-xl"></i>
+            <span class="text-xs mt-1">Create</span>
+        </a>
+        <a href="/notifications" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-bell text-xl relative">
+                <!-- Red dot, moved a little to the right -->
+                 {% if notifications["is_new_notification"] %}
+                <span class="absolute top-0 left-4 bg-red-500 w-2.5 h-2.5 rounded-full"></span>
+                {% endif %}
+            </i>
+            <span class="text-xs mt-1">Notifications</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-xs mt-1">Profile</span>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const mobileDarkModeToggle = document.getElementById('mobileDarkModeToggle');
+        const darkModeText = document.getElementById('darkModeText');
+        
+        function toggleDarkMode() {
+            document.documentElement.classList.toggle('dark');
+            const isDark = document.documentElement.classList.contains('dark');
+            localStorage.setItem('darkMode', isDark);
+            darkModeText.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+        }
+        
+        darkModeToggle.addEventListener('click', toggleDarkMode);
+        mobileDarkModeToggle.addEventListener('click', toggleDarkMode);
+        
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+            darkModeText.textContent = 'Light Mode';
+        }
+        
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileSidebar = document.getElementById('mobileSidebar');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileSidebar.classList.remove('hidden');
+        });
+        
+        closeMobileMenu.addEventListener('click', () => {
+            mobileSidebar.classList.add('hidden');
+        });
+        
+        // Like Button Animation
+        document.querySelectorAll('.post-like').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas', 'like-animation');
+                    // Change color to purple
+                    this.classList.remove('text-gray-600', 'dark:text-gray-300');
+                    this.classList.add('text-purple-600', 'dark:text-purple-400');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    // Revert color
+                    this.classList.add('text-gray-600', 'dark:text-gray-300');
+                    this.classList.remove('text-purple-600', 'dark:text-purple-400');
+                }
+            });
+        });
+
+        document.querySelectorAll('.save-post').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas', 'like-animation');
+                    // Change color to purple
+                    this.classList.remove('text-gray-600', 'dark:text-gray-300');
+                    this.classList.add('text-purple-600', 'dark:text-purple-400');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    // Revert color
+                    this.classList.add('text-gray-600', 'dark:text-gray-300');
+                    this.classList.remove('text-purple-600', 'dark:text-purple-400');
+                }
+            });
+        });
+
+        function sharePhoto(url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this post in SnapVide',
+                    url: url
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                alert('Web Share API not supported in your browser');
+            }
+        }
+
+        function likepost(postId) {
+            if (!postId) {
+                console.error("Post ID is missing");
+                return;
+            }
+        
+            let button = document.getElementById(postId);
+            let isLiked = button.classList.contains("liked"); // Check if already liked
+            let action = isLiked ? "unlike" : "like"; // Toggle action
+        
+            fetch("/like-post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id: postId, action: action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Post Liked") {
+                    button.classList.add("liked");
+                    button.innerHTML = '<i class="fas fa-heart text-red-500"></i>';
+                } else if (data.message === "Post Unliked") {
+                    button.classList.remove("liked");
+                    button.innerHTML = '<i class="far fa-heart"></i>';
+                } else {
+                    console.error("Error:", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Request failed:", error);
+            });
+        }
+        
+
+
+
+        function savePost(postId) {
+            if (!postId) {
+                console.error("Post ID is missing");
+                return;
+            }
+
+            let button = document.getElementById(postId);
+            let isSaved = button.classList.contains("saved"); // Properly check if post is saved
+            let action = isSaved ? "unsave" : "save"; // Toggle action
+
+            fetch("/save-post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id: postId, action: action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Saved") {
+                    button.classList.add("saved");
+                    button.innerHTML = '<i class="fas fa-bookmark mr-2"></i> Saved';
+                } else if (data.message === "Unsaved") {
+                    button.classList.remove("saved");
+                    button.innerHTML = '<i class="far fa-bookmark mr-2"></i> Save';
+                } else {
+                    console.error("Error:", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Request failed:", error);
+            });
+        }
+
+        
+        
+                
+
+    function sendUID(uid) {
+      fetch("/user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ uid: uid })
+      })
+      .then(response => response.json())
+      .then(data => {
+        console.log("Received:", data);
+        // you can redirect or update the DOM here
+      });
+    }
+
+    // Post Type Filtering
+    document.querySelectorAll('.filter-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            // Update active button styling
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('text-purple-600', 'dark:text-purple-400');
+                btn.classList.add('text-gray-600', 'dark:text-gray-300');
+            });
+            
+            // Add active styles to clicked button
+            this.classList.add('text-purple-600', 'dark:text-purple-400');
+            this.classList.remove('text-gray-600', 'dark:text-gray-300');
+            
+            // Hide all post containers
+            document.querySelectorAll('.post-type-filter').forEach(container => {
+                container.classList.remove('active');
+            });
+            
+            // Show selected post type
+            const postType = this.getAttribute('data-type');
+            document.getElementById(`${postType}-posts`).classList.add('active');
+        });
+    });
+
+    
+
+
+    // Add this to your JavaScript section
+    document.addEventListener('DOMContentLoaded', function() {
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const allPosts = document.querySelectorAll('.post-card');
+        
+        filterButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                // Remove active styles from all buttons
+                filterButtons.forEach(btn => {
+                    btn.classList.remove(
+                        'text-purple-600', 'dark:text-purple-400',
+                        'bg-purple-100', 'dark:bg-purple-900'
+                    );
+                    btn.classList.add(
+                        'text-gray-600', 'dark:text-gray-300',
+                        'hover:text-purple-600', 'dark:hover:text-purple-400'
+                    );
+                });
+                
+                // Add active styles to clicked button
+                this.classList.add(
+                    'text-purple-600', 'dark:text-purple-400'
+                );
+                this.classList.remove(
+                    'text-gray-600', 'dark:text-gray-300',
+                    'hover:text-purple-600', 'dark:hover:text-purple-400'
+                );
+                
+                const filter = this.id;
+                
+                allPosts.forEach(post => {
+                    post.style.display = 'block'; // Reset all posts
+                    
+                    if (filter === 'showPhotos') {
+                        if (!post.querySelector('img:not([alt="User"])')) {
+                            post.style.display = 'none';
+                        }
+                    } else if (filter === 'showVideos') {
+                        if (!post.querySelector('video')) {
+                            post.style.display = 'none';
+                        }
+                    } else if (filter === 'showText') {
+                        if (post.querySelector('img:not([alt="User"])') || post.querySelector('video')) {
+                            post.style.display = 'none';
+                        }
+                    }
+                    // 'showAll' will keep all posts visible
+                });
+            });
+        });
+        
+        // Initialize the first button as active
+        const firstButton = document.getElementById('showAll');
+        if (firstButton) {
+            firstButton.classList.add(
+                'text-purple-600', 'dark:text-purple-400'
+            );
+            firstButton.classList.remove(
+                'text-gray-600', 'dark:text-gray-300'
+            );
+        }
+    });
+
+
+    let currentPostId = null;
+    let user_email = null;
+    let image_url = null;
+
+    // Show comments dialog
+function showComments(postId, url, email) {
+
+        currentPostId = postId;
+        image_url = url;
+        user_email = email;
+        const dialog = document.getElementById('commentsDialog');
+        dialog.classList.remove('hidden');
+    
+    // Reset states
+    document.getElementById('commentsLoading').classList.remove('hidden');
+    document.getElementById('commentsEmpty').classList.add('hidden');
+    document.getElementById('commentsContainer').querySelectorAll('.comment-item').forEach(el => el.remove());
+    
+    // Load current user's avatar (replace with your actual implementation)
+    // document.getElementById('currentUserAvatar').src = getCurrentUserAvatar();
+    
+    // Load comments
+    fetchComments(postId);
+    
+    // Auto-resize textarea
+    const textarea = document.getElementById('newCommentText');
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = (this.scrollHeight) + 'px';
+        document.getElementById('postCommentBtn').disabled = this.value.trim() === '';
+    });
+}
+
+// Fetch comments from server
+async function fetchComments(postId) {
+    try {
+        // Simulate API delay (remove in production)
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        const response = await fetch(`/api/comments?post_id=${postId}`);
+        const comments = await response.json();
+        
+        const container = document.getElementById('commentsContainer');
+        const template = container.querySelector('.comment-template');
+        
+        // Hide loading state
+        document.getElementById('commentsLoading').classList.add('hidden');
+        
+        if (comments.length === 0) {
+            document.getElementById('commentsEmpty').classList.remove('hidden');
+            return;
+        }
+        
+        document.getElementById('commentsEmpty').classList.add('hidden');
+        comments.forEach(comment => {
+            const commentElement = template.cloneNode(true);
+            commentElement.classList.remove('hidden', 'comment-template');
+            commentElement.classList.add('comment-item');
+            
+            // Fill in data
+
+            commentElement.querySelector('img').src = comment.user.avatar || 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png';
+            commentElement.querySelector('img').alt = comment.user.name;
+            commentElement.querySelector('.font-semibold').textContent = comment.user.name;
+            commentElement.querySelector('.text-xs').textContent = formatTimeAgo(comment.timestamp);
+            commentElement.querySelector('p').textContent = comment.content;
+            
+            container.appendChild(commentElement);
+        });
+    } catch (error) {
+        console.error('Error fetching comments:', error);
+        document.getElementById('commentsLoading').innerHTML = `
+            <div class="text-center py-8 text-red-500">
+                <i class="fas fa-exclamation-circle mr-2"></i>
+                Failed to load comments
+            </div>
+        `;
+    }
+}
+
+// Helper function to format time (e.g., "2 hours ago")
+function formatTimeAgo(timestamp) {
+    const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+    const intervals = {
+        year: 31536000,
+        month: 2592000,
+        week: 604800,
+        day: 86400,
+        hour: 3600,
+        minute: 60
+    };
+    
+    for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+        const interval = Math.floor(seconds / secondsInUnit);
+        if (interval >= 1) {
+            return interval === 1 ? `${interval} ${unit} ago` : `${interval} ${unit}s ago`;
+        }
+    }
+    return 'Just now';
+}
+
+// Post a new comment
+async function postComment() {
+    const textarea = document.getElementById('newCommentText');
+    const content = textarea.value.trim();
+    if (!content) return;
+    
+    const postBtn = document.getElementById('postCommentBtn');
+    postBtn.disabled = true;
+    postBtn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> Posting...';
+    
+    try {
+        const response = await fetch('/api/comments', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                post_id: currentPostId,
+                content: content,
+                email: user_email,
+                url: image_url
+            })
+        });
+        
+        if (response.ok) {
+            textarea.value = '';
+            textarea.style.height = 'auto';
+
+            const container = document.getElementById('commentsContainer');
+            container.querySelectorAll('.comment-item').forEach(el => el.remove());
+            document.getElementById('commentsLoading').classList.remove('hidden');
+            document.getElementById('commentsEmpty').classList.add('hidden');
+
+            fetchComments(currentPostId); // Refresh comments
+        }
+    } catch (error) {
+        console.error('Error posting comment:', error);
+        alert('Failed to post comment. Please try again.');
+    } finally {
+        postBtn.disabled = false;
+        postBtn.textContent = 'Post';
+    }
+}
+
+// Close dialog
+function closeCommentsDialog() {
+    document.getElementById('commentsDialog').classList.add('hidden');
+    document.getElementById('newCommentText').value = '';
+}
+
+// Get current user's avatar (replace with your implementation)
+function getCurrentUserAvatar() {
+    // This should come from your user session/data
+    return 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png';
+}
+    </script>
+    
+
+        
+</body>
+</html>

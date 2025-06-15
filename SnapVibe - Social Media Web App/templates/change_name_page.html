@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Change Full Name | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .input-field {
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Navbar -->
+    <nav class="bg-white shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-users text-purple-600 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-purple-600">SnapVide</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Change Full Name Content -->
+    <div class="pt-16 pb-4">
+        <div class="max-w-md mx-auto px-4 sm:px-6">
+            <h1 class="text-2xl font-bold text-gray-900 text-center">Change Your Name</h1>
+            <p class="mt-2 text-sm text-gray-500 text-center">Enter your new full name below</p>
+        </div>
+    </div>
+
+    <div class="max-w-md mx-auto px-4 sm:px-6 pb-20">
+        <form id="changeNameForm" class="bg-white rounded-xl shadow-md overflow-hidden p-6">
+            <div class="space-y-6">
+                <div>
+                    <div class="relative">
+                        <input type="text" id="fullName" name="fullName" required
+                            class="input-field block w-full px-4 py-3 text-base rounded-lg border border-gray-300 focus:outline-none"
+                            placeholder="John Smith"
+                            value="{{ name }}">
+                        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                            <i class="fas fa-user text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="pt-2">
+                    <button type="submit" class="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 text-white font-medium rounded-lg transition duration-200">
+                        Update Name
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Form Submission
+        document.getElementById('changeNameForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const fullName = document.getElementById('fullName').value.trim();
+            
+            if (!fullName) {
+                alert('Please enter your full name');
+                return;
+            }
+            
+            try {
+                const response = await fetch('/settings/change-fullname', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ fullName })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Name updated successfully!');
+                    window.location.href = '/settings';
+                } else {
+                    throw new Error(data.message || 'Failed to update name');
+                }
+            } catch (error) {
+                console.error('Error updating name:', error);
+                alert(error.message || 'An error occurred while updating your name');
+            }
+        });
+    </script>
+</body>
+</html>

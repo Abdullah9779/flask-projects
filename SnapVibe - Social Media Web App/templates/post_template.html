@@ -1,0 +1,237 @@
+{% if i %}
+<div class="post-card mb-6 bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden transition duration-300 post-hover text-black dark:text-white">
+    <!-- Post Header -->
+    <div class="flex items-center justify-between p-4">
+        <div class="flex items-center space-x-3">
+            <div class="w-10 h-10 rounded-full overflow-hidden">
+                <img src="{{ user_data["posts"][i]["profile_pic"] }}" alt="User" class="w-full h-full object-cover">
+            </div>
+            <div>
+                <div class="flex items-center space-x-2">
+                    <h3 class="font-semibold">{{ user_data["posts"][i]["username"] }}</h3>
+                    <span class="text-xs text-gray-500 dark:text-gray-400">• {{ user_data["posts"][i]["privacy"] }}</span>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ user_data["posts"][i]["timestamp"]|time_ago }}</p>
+            </div>
+        </div>
+        <div class="relative ml-auto">
+            <!-- Three Dots Button -->
+            <button id="{{ user_data["posts"][i]["post_id"] }}" onclick="toggleMenu(this)" class="ml-auto text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                <i class="fas fa-ellipsis-h"></i>
+            </button>
+        
+            <!-- Dropdown Menu -->
+            <div class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-md rounded-md py-2 z-20">
+                <a href="#delete-post" onclick="sendPostRequest('delete', this)" class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Delete Post</a>
+
+                <a href="#change-privacy" onclick="changeprivacy('{% if user_data["posts"][i]["privacy"] == "public" %}Private{% else %}public{% endif %}', '{{ user_data["posts"][i]["post_id"] }}')" class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">{% if user_data["posts"][i]["privacy"] == "public" %}Private{% else %}public{% endif %}</a>
+            </div>
+        </div>
+    </div>
+
+    {% if user_data["posts"][i]["type"] == "image" %}
+    <!-- Post Image -->
+    <div class="px-4 pb-3">
+        <img src="{{ user_data["posts"][i]["media"] }}" alt="image" class="w-full h-auto rounded-lg">
+    </div>
+
+    {% elif user_data["posts"][i]["type"] == "video" %}
+    <div style="height: 545px;" class="w-full aspect-square bg-gray-200 overflow-hidden relative video-container">
+        <video onclick="toggleplay_reel('video-{{ user_data["posts"][i]["post_id"] }}')"  
+               id="video-{{ user_data["posts"][i]["post_id"] }}" 
+               class="scroll-video w-full h-full"
+               playsinline>
+            <source src="{{ user_data["posts"][i]["media"] }}" type="video/mp4">
+            Your browser does not support the video tag.
+        </video>
+    </div>
+
+    {% elif user_data["posts"][i]["type"] == "text" %}
+    <div class="px-4 pb-3">
+        <p class="text-gray-800 dark:text-gray-200 mb-3">{{ user_data["posts"][i]["content"] }}</p>
+    </div>
+    {% endif %}
+
+    <!-- Post Actions -->
+    <div class="p-4">
+        <div class="flex justify-between mb-2">
+            <div class="flex space-x-4">
+                <button id="{{ user_data["posts"][i]["post_id"] }}####{{ user_data["posts"][i]["user_id"] }}####None"
+                        onclick="likepost(this.id), toggleLike(this)"
+                        class="like-btn text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                    {% if user_id in user_data["posts"][i]["likes"] %}
+                    <i class="fas fa-heart text-red-500"></i>
+                    {% else %}
+                    <i class="far fa-heart"></i>
+                    {% endif %}
+                </button>
+
+                <button id="{{ user_data["posts"][i]["post_id"] }}"
+                        onclick="showComments('{{ user_data["posts"][i]["post_id"] }}', '{{ user_data["posts"][i]["media"] }}', '{{ user_data["posts"][i]["user_id"] }}')"
+                        class="text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                    <i class="far fa-comment"></i>
+                </button>
+
+                <button id="/share/{{ user_data["posts"][i]["post_id"] }}"
+                        onclick="sharePhoto('/share/{{ user_data["posts"][i]["post_id"] }}')"
+                        class="text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                    <i class="far fa-paper-plane"></i>
+                </button>
+            </div>
+            <button data-post-id="{{ user_data['posts'][i]['post_id'] }}" 
+                    onclick="savePost(this)" 
+                    class="bookmark-btn text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                {% if user_data["posts"][i]["post_id"] in saved_posts_id_list %}
+                <i class="fas fa-bookmark"></i>
+                {% else %}
+                <i class="far fa-bookmark"></i>
+                {% endif %}
+            </button>
+        </div>
+
+        <!-- Likes -->
+        <div class="mb-1">
+            <span class="font-semibold likes-count">{{ user_data["posts"][i]["likes"]|length }}</span> likes
+        </div>
+
+        {% if user_data["posts"][i]["type"] != "text" %}
+        <!-- Caption -->
+        <div class="mb-1">
+            <p><span class="font-semibold">{{ user_data["posts"][i]["username"] }} </span> {{ user_data["posts"][i]["content"] }}</p>
+        </div>
+        {% endif %}
+
+        <!-- Comments -->
+        {% if user_data["posts"][i]["comments"]|length > 1 %}
+        <div class="mb-1">
+            <button class="text-gray-500 dark:text-gray-400 text-sm hover:text-black dark:hover:text-white">
+                View all {{ user_data["posts"][i]["comments"]|length }} comments
+            </button>
+        </div>
+        {% endif %}
+
+        <!-- Time -->
+        <div>
+            <p class="text-gray-400 text-xs uppercase">{{ user_data["posts"][i]["timestamp"]|time_ago }}</p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<style>
+.video-container {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: #e5e7eb;
+    overflow: hidden;
+}
+
+.scroll-video {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    display: block;
+    background-color: black;
+}
+
+
+
+@keyframes ping {
+    0% { transform: scale(1); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+}
+.animate-ping {
+    animation: ping 0.5s cubic-bezier(0, 0, 0.2, 1);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const videos = document.querySelectorAll('.scroll-video');
+    let activeVideo = null;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const video = entry.target;
+
+            if (entry.isIntersecting) {
+                if (activeVideo && activeVideo !== video) {
+                    activeVideo.pause();
+                }
+
+                video.play().catch(error => {
+                    console.log('Autoplay prevented:', error);
+                });
+                activeVideo = video;
+            } else if (video === activeVideo) {
+                video.pause();
+                activeVideo = null;
+            }
+        });
+    }, {
+        threshold: 0.7,
+        rootMargin: '0px 0px -50px 0px'
+    });
+
+    videos.forEach(video => {
+        video.removeAttribute('muted');
+        observer.observe(video);
+
+        video.addEventListener('pause', function() {
+            if (this !== activeVideo) {
+                this.currentTime = 0;
+            }
+        });
+    });
+
+    document.querySelectorAll('.video-container').forEach(container => {
+        container.addEventListener('dblclick', function() {
+            const likeBtn = this.nextElementSibling.querySelector('.like-btn');
+            if (likeBtn) {
+                toggleLike(likeBtn);
+                const heart = document.createElement('div');
+                heart.innerHTML = '<i class="fas fa-heart text-6xl text-white absolute"></i>';
+                heart.className = 'absolute inset-0 flex items-center justify-center animate-ping opacity-0';
+                this.appendChild(heart);
+                setTimeout(() => {
+                    heart.classList.remove('opacity-0');
+                    setTimeout(() => { heart.remove(); }, 600);
+                }, 10);
+            }
+        });
+    });
+});
+
+function toggleplay_reel(id) {
+    const video = document.getElementById(id);
+    if (video.paused) {
+        video.play();
+    } else {
+        video.pause();
+    }
+}
+
+function toggleLike(button) {
+    const icon = button.querySelector('i');
+    const likesCount = button.closest('.p-4').querySelector('.likes-count');
+    let count = parseInt(likesCount.textContent.replace(/,/g, ''));
+
+    if (icon.classList.contains('far')) {
+        icon.classList.replace('far', 'fas');
+        icon.classList.add('text-red-500');
+        count++;
+        button.style.transform = 'scale(1.2)';
+        setTimeout(() => { button.style.transform = 'scale(1)' }, 200);
+    } else {
+        icon.classList.replace('fas', 'far');
+        icon.classList.remove('text-red-500');
+        count--;
+    }
+
+    likesCount.textContent = count.toLocaleString();
+}
+</script>

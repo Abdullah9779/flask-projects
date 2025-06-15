@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Profile | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .avatar-edit {
+            width: 120px;
+            height: 120px;
+            border: 5px solid white;
+        }
+        
+        .input-focus:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+        }
+        
+        .dark .input-focus:focus {
+            border-color: #8b5cf6;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.3);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Edit Profile Form -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-20">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Edit Profile</h1>
+            
+            <!-- Profile Picture -->
+            <div class="flex justify-center mb-8">
+                <div class="relative">
+                    <img id="profileImage" src="{{ user_data["profile_data"]["profile_pic"] }}" alt="Profile" class="avatar-edit rounded-full bg-white dark:bg-gray-800 shadow-lg">
+                    <input type="file" id="imageUpload" accept="image/*" class="hidden">
+                    <button type="button" onclick="document.getElementById('imageUpload').click()" class="absolute bottom-2 right-2 bg-purple-600 text-white p-2 rounded-full">
+                        <i class="fas fa-camera text-sm"></i>
+                    </button>
+                </div>
+            </div>
+
+            <form id="profileForm">
+                <!-- Tagline -->
+                <div class="mb-6">
+                    <label for="tagline" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tagline</label>
+                    <input type="text" id="tagline" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 input-focus" 
+                           placeholder="Professional Photographer & Travel Enthusiast" 
+                           value="{{ user_data["profile_data"]["tagline"] }}">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">A short description that appears under your name</p>
+                </div>
+                
+                <!-- About Section -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">About</h2>
+                    
+                    <div>
+                        <label for="bio" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bio</label>
+                        <textarea id="bio" rows="4" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 input-focus">{{ user_data["profile_data"]["bio"] }}</textarea>
+                    </div>
+                </div>
+                
+                <!-- Location and Website -->
+                <div class="grid md:grid-cols-2 gap-4 mb-8">
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
+                        <input type="text" id="location" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 input-focus" value="{{ user_data["profile_data"]["location"] }}">
+                    </div>
+                    <div>
+                        <label for="website" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
+                        <input type="url" id="website" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 input-focus" value="{{ user_data["profile_data"]["website"] }}">
+                    </div>
+                </div>
+                
+                <!-- Work Experience -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Work</h2>
+                    
+                    <div>
+                        <label for="work" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Work Experience</label>
+                        <textarea id="work" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 input-focus">{{ user_data["profile_data"]["work"] }}</textarea>
+                        
+                    </div>
+                </div>
+                
+                <!-- Education -->
+                <div class="mb-8">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Education</h2>
+                    
+                    <div>
+                        <label for="education" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Education</label>
+                        <textarea id="education" rows="3" class="w-full px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 input-focus">{{ user_data["profile_data"]["education"] }}</textarea>
+                        
+                    </div>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="flex justify-end space-x-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <a href="profile"><button type="button" class="px-6 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-100 dark:hover:bg-gray-700">
+                        Cancel
+                    </button></a>
+                    <button type="submit" class="px-6 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-medium">
+                        Save Changes
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around py-2">
+        <a href="index.html" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">Home</span>
+        </a>
+        <a href="/ai" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-robot text-xl"></i>
+            <span class="text-xs mt-1">AI</span>
+        </a>
+        <a href="#" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-plus-square text-xl"></i>
+            <span class="text-xs mt-1">Create</span>
+        </a>
+        <a href="#" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-bell text-xl"></i>
+            <span class="text-xs mt-1">Notifications</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center text-purple-600 dark:text-purple-400">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-xs mt-1">Profile</span>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+    // Dark Mode Toggle
+    const darkModeToggle = document.getElementById('darkModeToggle');
+
+    darkModeToggle.addEventListener('click', () => {
+        document.documentElement.classList.toggle('dark');
+        localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+    });
+
+    // Check for saved dark mode preference
+    if (localStorage.getItem('darkMode') === 'true') {
+        document.documentElement.classList.add('dark');
+    }
+
+    // Form Submission
+    document.getElementById('profileForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+    
+        const formData = new FormData();
+        formData.append('tagline', document.getElementById('tagline').value);
+        formData.append('bio', document.getElementById('bio').value);
+        formData.append('location', document.getElementById('location').value);
+        formData.append('website', document.getElementById('website').value);
+        formData.append('work', document.getElementById('work').value);
+        formData.append('education', document.getElementById('education').value);
+    
+        // Get profile image file
+        const imageFile = document.getElementById('imageUpload').files[0];
+        if (imageFile) {
+            formData.append('profile_image', imageFile);
+        }
+    
+        try {
+            const response = await fetch('/edit-profile', {
+                method: 'POST',
+                body: formData
+            });
+    
+            const result = await response.json();
+    
+            if (response.ok) {
+                alert('Profile updated successfully!');
+                window.location.href = '/profile';
+            } else {
+                alert('Error: ' + result.message);
+            }
+        } catch (error) {
+            alert('Failed to update profile. Please try again later.');
+            console.error('Error:', error);
+        }
+    });
+    
+    
+        // Handle image preview before upload
+        document.getElementById('imageUpload').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    document.getElementById('profileImage').src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    
+    
+</script>
+
+</body>
+</html>

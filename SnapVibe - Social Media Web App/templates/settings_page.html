@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .dark .notification-unread {
+            background-color: #1f2937;
+        }
+        
+        .toggle-checkbox:checked {
+            right: 0;
+            border-color: #8b5cf6;
+        }
+        
+        .toggle-checkbox:checked + .toggle-label {
+            background-color: #8b5cf6;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Settings Header -->
+    <div class="pt-16 pb-4">
+        <div class="max-w-3xl mx-auto px-4 sm:px-6">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Settings</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Content -->
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 pb-20">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden">
+            <!-- Account Settings -->
+            <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Account</h3>
+            </div>
+            <div class="px-4 py-5 sm:p-6">
+                <div class="space-y-4">
+                    <a href="/settings/change-fullname" class="block hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-3 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Change Full Name</label>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your full name.</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="/settings/change-email" class="block hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-3 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Change Email</label>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Update your email address</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="/settings/change-password" class="block hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-3 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Change Password</label>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Set a new password</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                    
+                    <a href="/settings/delete-account" class="block hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg p-3 transition">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Delete Account</label>
+                                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Permanently delete your account</p>
+                            </div>
+                            <i class="fas fa-chevron-right text-gray-400"></i>
+                        </div>
+                    </a>
+                </div>
+            </div>
+            
+            <!-- Privacy Settings -->
+            <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Privacy</h3>
+            </div>
+            <div class="px-4 py-5 sm:p-6">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Private Account</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Only approved followers can see your content</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="private-account" id="private-account" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="private-account" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Show Activity Status</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Allow others to see when you're active</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="activity-status" id="activity-status" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="activity-status" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Allow Comments</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Control who can comment on your posts</p>
+                        </div>
+                        <select class="ml-4 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <option>Everyone</option>
+                            <option>Followers</option>
+                            <option>No one</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Notification Settings -->
+            <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">Notifications</h3>
+            </div>
+            <div class="px-4 py-5 sm:p-6">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Push Notifications</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Receive push notifications</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="push-notifications" id="push-notifications" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="push-notifications" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email Notifications</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Receive email notifications</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="email-notifications" id="email-notifications" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="email-notifications" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">New Followers</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Notify me when someone follows me</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="follower-notifications" id="follower-notifications" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="follower-notifications" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Post Likes</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Notify me when someone likes my post</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="like-notifications" id="like-notifications" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="like-notifications" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Comments</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Notify me when someone comments on my post</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="comment-notifications" id="comment-notifications" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="comment-notifications" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- App Settings -->
+            <div class="border-b border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-white">App Settings</h3>
+            </div>
+            <div class="px-4 py-5 sm:p-6">
+                <div class="space-y-6">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dark Mode</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Toggle between light and dark theme</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="dark-mode" id="dark-mode" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="dark-mode" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Language</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Change app language</p>
+                        </div>
+                        <select class="ml-4 block w-32 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm rounded-md dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+                            <option>English</option>
+                            <option>Spanish</option>
+                            <option>French</option>
+                            <option>German</option>
+                        </select>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Data Saver</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Reduce data usage</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="data-saver" id="data-saver" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer"/>
+                            <label for="data-saver" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Auto-play Videos</label>
+                            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Play videos automatically</p>
+                        </div>
+                        <div class="relative inline-block w-10 mr-2 align-middle select-none">
+                            <input type="checkbox" name="autoplay" id="autoplay" class="toggle-checkbox absolute block w-6 h-6 rounded-full bg-white border-4 appearance-none cursor-pointer" checked/>
+                            <label for="autoplay" class="toggle-label block overflow-hidden h-6 rounded-full bg-gray-300 cursor-pointer"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around py-2">
+        <a href="/" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">Home</span>
+        </a>
+        <a href="/ai" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-robot text-xl"></i>
+            <span class="text-xs mt-1">AI</span>
+        </a>
+        <a href="/create-post" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-plus-square text-xl"></i>
+            <span class="text-xs mt-1">Create</span>
+        </a>
+        <a href="/notifications" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-bell text-xl"></i>
+            <span class="text-xs mt-1">Notifications</span>
+        </a>
+        <a href="/settings" class="flex flex-col items-center text-purple-600 dark:text-purple-400">
+            <i class="fas fa-cog text-xl"></i>
+            <span class="text-xs mt-1">Settings</span>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+            
+            // Update the dark mode toggle in settings
+            const darkModeToggle = document.getElementById('dark-mode');
+            if (darkModeToggle) {
+                darkModeToggle.checked = document.documentElement.classList.contains('dark');
+            }
+        });
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+            const darkModeToggle = document.getElementById('dark-mode');
+            if (darkModeToggle) {
+                darkModeToggle.checked = true;
+            }
+        }
+
+        // Sync dark mode toggle in settings with system
+        const darkModeToggleSetting = document.getElementById('dark-mode');
+        if (darkModeToggleSetting) {
+            darkModeToggleSetting.addEventListener('change', function() {
+                document.documentElement.classList.toggle('dark', this.checked);
+                localStorage.setItem('darkMode', this.checked);
+                
+                // Update the navbar toggle
+                const navbarToggle = document.getElementById('darkModeToggle');
+                if (navbarToggle) {
+                    navbarToggle.querySelector('.fa-moon').classList.toggle('hidden', this.checked);
+                    navbarToggle.querySelector('.fa-sun').classList.toggle('hidden', !this.checked);
+                }
+            });
+        }
+
+        // Initialize toggle switches
+        document.querySelectorAll('.toggle-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const label = this.nextElementSibling;
+                if (this.checked) {
+                    label.classList.add('bg-purple-600');
+                    label.classList.remove('bg-gray-300');
+                } else {
+                    label.classList.remove('bg-purple-600');
+                    label.classList.add('bg-gray-300');
+                }
+            });
+            
+            // Set initial state
+            if (checkbox.checked) {
+                const label = checkbox.nextElementSibling;
+                label.classList.add('bg-purple-600');
+                label.classList.remove('bg-gray-300');
+            }
+        });
+    </script>
+</body>
+</html>

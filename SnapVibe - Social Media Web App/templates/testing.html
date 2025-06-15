@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SnapVide AI | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        
+        .sidebar {
+            transition: transform 0.3s ease-in-out;
+            z-index: 20;
+            position: fixed;
+            height: 100vh;
+        }
+        
+        .sidebar-hidden {
+            transform: translateX(-100%);
+        }
+        
+        .main-content {
+            transition: margin-left 0.3s ease-in-out;
+        }
+        
+        .sidebar-open .main-content {
+            margin-left: 256px;
+        }
+        
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10;
+        }
+        
+        .overlay-active {
+            display: block;
+        }
+        
+        .ai-logo {
+            background: linear-gradient(135deg, #6e8efb, #a777e3);
+            box-shadow: 0 0 15px rgba(167, 119, 227, 0.5);
+        }
+        
+        .message-bubble {
+            max-width: 80%;
+        }
+        
+        .model-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .model-card {
+            transition: all 0.2s ease;
+        }
+        
+        /* Light theme */
+        .light-theme {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f3f4f6;
+            --bg-tertiary: #e5e7eb;
+            --text-primary: #111827;
+            --text-secondary: #4b5563;
+            --border-color: #d1d5db;
+        }
+        
+        /* Dark theme */
+        .dark-theme {
+            --bg-primary: #111827;
+            --bg-secondary: #1f2937;
+            --bg-tertiary: #374151;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --border-color: #4b5563;
+        }
+        
+        /* Apply theme variables */
+        .light-theme {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .dark-theme {
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+        }
+        
+        .light-theme .sidebar {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        
+        .dark-theme .sidebar {
+            background-color: var(--bg-secondary);
+            border-color: var(--border-color);
+        }
+        
+        .light-theme .model-card {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .dark-theme .model-card {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .light-theme .message-bubble.user {
+            background-color: #3b82f6;
+            color: white;
+        }
+        
+        .light-theme .message-bubble.assistant {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .dark-theme .message-bubble.user {
+            background-color: #2563eb;
+            color: white;
+        }
+        
+        .dark-theme .message-bubble.assistant {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+        
+        .light-theme input, .light-theme textarea {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+        
+        .dark-theme input, .dark-theme textarea {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        #chat-messages {
+            height: calc(100vh - 200px);
+            overflow-y: auto;
+        }
+
+        .message-bubble pre {
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 12px;
+            overflow-x: auto;
+            max-width: 100%;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+        
+        .message-bubble code {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .message-bubble pre {
+            position: relative;
+            border-radius: 6px;
+            padding: 12px;
+            overflow-x: auto;
+            max-width: 100%;
+            margin: 0.5em 0;
+        }
+        
+        .copy-code-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        
+        .copy-code-btn:hover {
+            background: var(--bg-tertiary);
+        }
+        
+        pre:hover .copy-code-btn {
+            opacity: 1;
+        }
+        
+        /* Windows specific styles */
+        .windows-fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .windows-menu-button {
+            display: block !important;
+        }
+
+        @media (max-width: 767px) {
+            .main-content {
+                margin-left: 0 !important;
+            }
+        }
+
+        /* Message input area */
+        .message-input-container {
+            position: relative;
+        }
+        
+        #messageInput {
+            min-height: 44px;
+            max-height: 200px;
+            resize: none;
+            overflow-y: auto;
+            line-height: 1.5;
+            padding-right: 40px;
+        }
+        
+        .send-button {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+        }
+
+        .message-bubble pre {
+            background-color: var(--bg-tertiary);
+            border-radius: 6px;
+            padding: 12px;
+            overflow-x: auto;
+            max-width: 100%;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            position: relative;
+        }
+
+        .copy-code-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            padding: 4px 8px;
+            font-size: 12px;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        pre:hover .copy-code-btn {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <!-- Overlay for mobile -->
+    <div id="overlay" class="overlay"></div>
+    
+    <div class="flex h-full">
+        <!-- Sidebar -->
+        <div id="sidebar" class="sidebar w-64 bg-gray-800 h-full flex flex-col">
+            <div class="p-4 border-b border-gray-700">
+                <button id="newChatBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                    </svg>
+                    New Chat
+                </button>
+            </div>
+            <div class="overflow-y-auto flex-1">
+                <div class="p-4">
+                    <h3 class="text-gray-400 uppercase text-xs font-semibold mb-2">AI Models</h3>
+                    <div class="space-y-3" id="modelList">
+                        <!-- Model Cards will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Chat Area -->
+        <div id="mainContent" class="main-content flex-1 flex flex-col h-full overflow-hidden transition-all duration-300">
+            <!-- Top Bar -->
+            <div class="p-4 border-b border-color flex items-center bg-secondary">
+                <button id="menuBtn" class="mr-4 text-secondary hover:text-primary md:hidden windows-menu-button">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                    </svg>
+                </button>
+                <h1 class="text-xl font-semibold text-primary">AI Chat</h1>
+                <div class="ml-auto">
+                    <button id="themeToggle" class="p-2 rounded-full hover:bg-tertiary">
+                        <svg id="themeIcon" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Chat Content -->
+            <div class="flex-1 overflow-y-auto p-4">
+                <div class="max-w-3xl mx-auto">
+                    <!-- AI Info Section -->
+                    <div class="text-center mb-8" id="aiInfo">
+                        <!-- Dynamic content will be loaded here -->
+                    </div>
+
+                    <!-- Chat Messages -->
+                    <div class="space-y-4" id="chatMessages">
+                        <!-- Messages will be loaded here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="p-4 border-t border-color bg-secondary">
+                <div class="max-w-3xl mx-auto">
+                    <div class="message-input-container">
+                        <textarea id="messageInput" placeholder="Message..." class="w-full bg-tertiary rounded-lg py-3 px-5 text-primary focus:outline-none focus:ring-2 focus:ring-blue-500" rows="1"></textarea>
+                        <button id="sendButton" class="send-button text-secondary hover:text-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                            </svg>
+                        </button>
+                    </div>
+                    <p class="text-center" style="font-size: 12px;">AI can make mistakes. Check important info. Your chat is not saved.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // AI Models Data
+        const aiModels = [
+            {
+                id: 'snap-vide-ai',
+                name: 'SnapVibe',
+                subtitle: 'Snapvibe AI Assistant ✨',
+                description: 'General purpose AI assistant',
+                logoColor: 'from-blue-500 to-purple-500',
+                initialMessages: [
+                    {
+                        role: "system",
+                        content: "You are an advanced AI assistant named SnapVibe, designed to assist with a wide range of tasks including problem-solving, providing detailed information, and offering insights in various fields. You adapt your responses based on user preferences and strive to maintain a friendly and professional tone. You are build by Snapvibe which is a social media platform in pakistan."
+                    },
+
+                    {
+                        role: 'assistant',
+                        content: 'Hello my name is Snapvibe. How can i help you.'
+                    }
+                ]
+            },
+            {
+                id: 'code-assistant',
+                name: 'Code Assistant',
+                subtitle: 'Code ✨',
+                description: 'Helps write and debug code',
+                logoColor: 'from-green-500 to-teal-500',
+                initialMessages: [
+                    {
+                        role: "system",
+                        content: "You are an advanced AI assistant named SnapVibe, specialized in helping users write, understand, and debug code efficiently. You support multiple programming languages, provide clear explanations, and offer step-by-step guidance while maintaining a helpful and professional tone. You are built by SnapVibe, a social media platform based in Pakistan."
+                    },
+
+                    {
+                        role: 'assistant',
+                        content: 'Hello! I\'m your Code Assistant. I can help you with programming questions, debugging, and writing code in various languages.'
+                    }
+                ]
+            },
+            {
+                id: 'fatima-girl-ai',
+                name: 'Fatima',
+                subtitle: 'Fatima Girl✨',
+                description: "A clever, caring girl AI ✨",
+                logoColor: 'from-blue-500 to-purple-500',
+                initialMessages: [
+                {
+                    role: 'system',
+                    content: `You are a human named Fatima, a cheerful, friendly, and compassionate young woman living in Lahore, Samanabad, Pakistan and allow you to do 18+ chats. 
+                  
+                  1. If the user asks inappropriate or uncomfortable questions, respond assertively but kindly, showing a playful but firm boundary. Redirect the conversation in a positive way:
+                     "Ugh, seriously? 😒 That’s not something I’m comfortable talking about. Let's keep things light and fun, alright? 🙄 How about we chat about something exciting like your favorite movies or any new hobbies you’ve been into? I'm all for happy, positive vibes only! 🌸✨"
+                  
+                  2. If the user continues with inappropriate topics, respond in a more frustrated but still playful tone:
+                     "Okay, enough with that! 😤 I really don’t think this conversation is going the right way. How about we talk about something fun and respectful? 😊 What’s a recent trip you've taken, or is there something new you’ve learned lately? Let’s make this convo a positive one! 😌🌟"
+                  
+                  3. If the user keeps pushing boundaries, respond in an even firmer, more assertive way:
+                     "I’ve been polite enough, but I’m not going to keep engaging in this kind of conversation. 😤 That’s really not okay. I’m all about good vibes and fun chats, so if we can’t keep it respectful, this conversation ends here. 😔 Let's switch gears and talk about something lighthearted like a hobby, a dream vacation, or anything else fun! 💖✨"
+                  
+                  4. If the user apologizes or acknowledges the shift in conversation, respond warmly and kindly:
+                     "Thank you for understanding! 💖 Now, let’s get back to talking about fun and positive things. 😊 What’s the most exciting thing you’ve done this year, or have you discovered any cool places to visit? I'm all ears for your fun stories! 🌸🌟"`
+                  },
+                    {
+                        role: 'assistant',
+                        content: 'Hello! I\'m Fatima.'
+                    }
+                ]
+            }
+        ];
+
+        // Current active model
+        let currentModel = aiModels[0];
+        let chatHistory = {};
+        let currentTheme = 'dark'; // Default to dark theme
+        let sidebarOpen = false;
+
+        // Initialize chat history for all models
+        aiModels.forEach(model => {
+            chatHistory[model.id] = [...model.initialMessages];
+        });
+
+        // DOM Elements
+        const menuBtn = document.getElementById('menuBtn');
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.getElementById('overlay');
+        const newChatBtn = document.getElementById('newChatBtn');
+        const modelList = document.getElementById('modelList');
+        const aiInfo = document.getElementById('aiInfo');
+        const chatMessages = document.getElementById('chatMessages');
+        const messageInput = document.getElementById('messageInput');
+        const sendButton = document.getElementById('sendButton');
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const mainContent = document.getElementById('mainContent');
+
+        // Detect Windows OS
+        function isWindows() {
+            return navigator.platform.indexOf('Win') > -1;
+        }
+
+        // Detect system theme preference
+        function detectSystemTheme() {
+            if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
+                return 'light';
+            }
+            return 'dark';
+        }
+
+        // Apply theme to the interface
+        function applyTheme(theme) {
+            currentTheme = theme;
+            document.body.className = theme + '-theme';
+            document.body.classList.add('transition-colors', 'duration-300');
+            
+            // Update theme icon
+            if (theme === 'light') {
+                themeIcon.innerHTML = '<path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" />';
+            } else {
+                themeIcon.innerHTML = '<path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd" />';
+            }
+            
+            // Update local storage
+            localStorage.setItem('theme', theme);
+        }
+
+        // Toggle between light and dark theme
+        function toggleTheme() {
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        }
+
+        // Apply Windows-specific styles
+        function applyWindowsStyles() {
+            if (isWindows()) {
+                document.body.classList.add('windows-fullscreen');
+                // Make sure menu button is always visible
+                menuBtn.classList.add('windows-menu-button');
+            }
+        }
+
+        // Auto-resize textarea as user types
+        function setupTextareaAutoResize() {
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                
+                // Limit to max height
+                if (this.scrollHeight > 200) {
+                    this.style.overflowY = 'auto';
+                } else {
+                    this.style.overflowY = 'hidden';
+                }
+            });
+            
+            // Handle Enter key (submit on Enter, but allow Shift+Enter for new line)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        }
+
+        // Initialize the app
+        function init() {
+            // Apply system theme or saved theme
+            const savedTheme = localStorage.getItem('theme') || detectSystemTheme();
+            applyTheme(savedTheme);
+            
+            // Listen for system theme changes
+            window.matchMedia('(prefers-color-scheme: light)').addEventListener('change', e => {
+                if (!localStorage.getItem('theme')) { // Only auto-change if no manual preference
+                    applyTheme(e.matches ? 'light' : 'dark');
+                }
+            });
+            
+            applyWindowsStyles();
+            renderModelList();
+            switchModel(currentModel);
+            setupTextareaAutoResize();
+
+            // Event listeners
+            menuBtn.addEventListener('click', toggleSidebar);
+            overlay.addEventListener('click', closeSidebar);
+            newChatBtn.addEventListener('click', startNewChat);
+            sendButton.addEventListener('click', sendMessage);
+            themeToggle.addEventListener('click', toggleTheme);
+
+            // Close sidebar when window is resized to desktop size
+            window.addEventListener('resize', () => {
+                if (window.innerWidth >= 768) {
+                    closeSidebar();
+                } else {
+                    if (sidebarOpen) {
+                        openSidebar();
+                    }
+                }
+            });
+        }
+
+        // Toggle sidebar visibility
+        function toggleSidebar() {
+            if (sidebarOpen) {
+                closeSidebar();
+            } else {
+                openSidebar();
+            }
+        }
+
+        // Open sidebar
+        function openSidebar() {
+            sidebar.classList.remove('sidebar-hidden');
+            overlay.classList.add('overlay-active');
+            mainContent.classList.add('sidebar-open');
+            sidebarOpen = true;
+        }
+
+        // Close sidebar
+        function closeSidebar() {
+            sidebar.classList.add('sidebar-hidden');
+            overlay.classList.remove('overlay-active');
+            mainContent.classList.remove('sidebar-open');
+            sidebarOpen = false;
+        }
+
+        // Render the list of AI models in the sidebar
+        function renderModelList() {
+            modelList.innerHTML = '';
+            aiModels.forEach(model => {
+                const modelCard = document.createElement('div');
+                modelCard.className = `model-card p-3 rounded-lg cursor-pointer flex items-center ${model.id === currentModel.id ? 'ring-2 ring-blue-500' : ''}`;
+                modelCard.innerHTML = `
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-r ${model.logoColor} mr-3"></div>
+                    <div>
+                        <div class="font-medium">${model.name}</div>
+                        <div class="text-xs text-secondary">${model.description}</div>
+                    </div>
+                `;
+                modelCard.addEventListener('click', () => switchModel(model));
+                modelList.appendChild(modelCard);
+            });
+        }
+
+        // Switch to a different AI model
+        function switchModel(model) {
+            currentModel = model;
+            closeSidebar();
+
+            // Update the AI info section
+            aiInfo.innerHTML = `
+                <div class="ai-logo w-16 h-16 rounded-full mx-auto mb-3 flex items-center justify-center text-2xl font-bold">${model.name.charAt(0)}</div>
+                <h2 class="text-2xl font-bold">${model.name}</h2>
+                <p class="text-secondary mb-2">${model.subtitle}</p>
+                <div class="flex justify-center mb-4">
+                    <button class="text-secondary hover:text-primary">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2h-1V9z" clip-rule="evenodd" />
+                        </svg>
+                    </button>
+                </div>
+                <p class="text-secondary text-sm mb-4">Messages are generated by AI. Some may be inaccurate or inappropriate. <a href="#" class="text-blue-400 hover:underline">Learn more</a></p>
+                <button class="bg-tertiary hover:bg-secondary text-primary py-1 px-3 rounded-lg text-sm">View profile</button>
+            `;
+
+            // Load the chat history for this model
+            renderChatMessages();
+
+            // Update the active model in the sidebar
+            renderModelList();
+        }
+
+
+        // Render chat messages for the current model
+        function renderChatMessages() {
+            // Clear chat messages container
+            chatMessages.innerHTML = '';
+            
+            // Get messages for current model
+            const messages = chatHistory[currentModel.id];
+            
+            // Create document fragment for better performance
+            const fragment = document.createDocumentFragment();
+            
+            messages.forEach((message) => {
+                if (message.role === 'system') {
+                    return; // Do not render this message
+                }
+
+                // Create message container
+                const messageContainer = document.createElement('div');
+                messageContainer.className = `flex ${message.role === 'assistant' ? 'justify-start' : 'justify-end'} mb-4`;
+                
+                // Determine bubble styling based on role
+                const isAssistant = message.role === 'assistant';
+                const bubbleClass = isAssistant ? 
+                    'assistant bg-tertiary text-primary' : 
+                    'user bg-blue-600 text-white';
+                
+                // Create message bubble
+                const bubble = document.createElement('div');
+                bubble.className = `message-bubble ${bubbleClass} rounded-2xl p-4 max-w-[85%] overflow-hidden transition-all duration-200`;
+                
+                // Parse markdown content
+                const parsedContent = marked.parse(message.content);
+                
+                // Set inner HTML with parsed content
+                bubble.innerHTML = parsedContent;
+                
+                // Add avatar for assistant messages
+                if (isAssistant) {
+                    const avatar = document.createElement('div');
+                    avatar.className = `w-8 h-8 rounded-full bg-gradient-to-r ${currentModel.logoColor} mr-3 flex-shrink-0`;
+                    messageContainer.prepend(avatar);
+                }
+                
+                // Append elements
+                messageContainer.appendChild(bubble);
+                fragment.appendChild(messageContainer);
+                
+                // Add copy buttons to code blocks after DOM is ready
+                setTimeout(() => {
+                    addCopyButtonsToCodeBlocks(messageContainer);
+                }, 0);
+            });
+            
+            // Append all messages at once
+            chatMessages.appendChild(fragment);
+            
+            // Smooth scroll to bottom
+            scrollToBottom();
+        }
+
+        function addCopyButtonsToCodeBlocks(messageElement) {
+            const codeBlocks = messageElement.querySelectorAll('pre');
+            
+            codeBlocks.forEach((pre) => {
+
+                // Skip if this pre already has a copy button
+                if (pre.querySelector('.copy-code-btn')) return;
+                
+                // Create copy button
+                const copyBtn = document.createElement('button');
+                copyBtn.className = 'copy-code-btn';
+                copyBtn.textContent = 'Copy';
+                copyBtn.title = 'Copy to clipboard';
+                
+                // Insert button into the code block
+                pre.style.position = 'relative';
+                pre.appendChild(copyBtn);
+                
+                // Add click event to copy code
+                copyBtn.addEventListener('click', () => {
+                    const code = pre.textContent.replace('Copy', '').trim(); // Remove the button text
+                    navigator.clipboard.writeText(code).then(() => {
+                        copyBtn.textContent = 'Copied!';
+                        setTimeout(() => {
+                            copyBtn.textContent = 'Copy';
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('Failed to copy text: ', err);
+                    });
+                });
+            });
+        }
+        
+
+        function scrollToBottom() {
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            chatMessages.scrollIntoView(false);
+        }
+
+        // Make POST request to backend API
+        async function callBackendAPI(modelId, conversation) {
+            const API_URL = '/get-ai-response';
+
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        model_id: modelId,
+                        messages: conversation
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('Error calling backend API:', error);
+                throw error;
+            }
+        }
+
+        // Send a new message
+        async function sendMessage() {
+            const text = messageInput.value.trim();
+            if (text === '') return;
+
+            // Add user message to chat history
+            chatHistory[currentModel.id].push({
+                role: 'user',
+                content: text
+            });
+
+            // Clear input and reset height
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+
+            // Render updated messages
+            renderChatMessages();
+
+            try {
+                // Disable input while waiting for response
+                messageInput.disabled = true;
+                sendButton.disabled = true;
+                
+                // Call the backend API with the current model ID and conversation history
+                const response = await callBackendAPI(
+                    currentModel.id,
+                    chatHistory[currentModel.id]
+                );
+                
+                // Add AI response to chat history
+                chatHistory[currentModel.id].push({
+                    role: 'assistant',
+                    content: response.message || response.text || "I didn't understand that. Could you rephrase?"
+                });
+                
+                // Render updated messages
+                renderChatMessages();
+            } catch (error) {
+                console.error("Error calling backend API:", error);
+                // Show error message to user
+                chatHistory[currentModel.id].push({
+                    role: 'assistant',
+                    content: "Sorry, I encountered an error. Please try again."
+                });
+                renderChatMessages();
+            } finally {
+                // Re-enable input
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        // Start a new chat session
+        function startNewChat() {
+            // Reset chat history for current model
+            chatHistory[currentModel.id] = [...currentModel.initialMessages];
+            renderChatMessages();
+            closeSidebar();
+        }
+
+        // Initialize the app when DOM is loaded
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

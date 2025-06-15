@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .post-preview {
+            max-height: 400px;
+            object-fit: contain;
+        }
+        
+        .file-input-label:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+        }
+        
+        .dark .post-card {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        
+        .video-preview {
+            max-height: 400px;
+            width: 100%;
+            background-color: #000;
+        }
+        
+        .char-counter {
+            font-size: 0.75rem;
+            text-align: right;
+            margin-top: 0.25rem;
+        }
+        
+        .char-counter.warning {
+            color: #ef4444;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <button id="darkModeToggle" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                        <i class="fas fa-moon dark:hidden"></i>
+                        <i class="fas fa-sun hidden dark:block"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Create Post Section -->
+    <div class="max-w-2xl mx-auto px-4 sm:px-6 py-20">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create Post</h1>
+            
+            <form id="createPostForm" class="space-y-4">
+                <!-- Post Content -->
+                <div>
+                    <label for="postContent" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Content <span class="text-red-500">*</span></label>
+                    <textarea id="postContent" rows="4" maxlength="2500" required class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:border-purple-500 focus:ring-1 focus:ring-purple-500 dark:text-white" placeholder="Add Caption"></textarea>
+                    <div id="charCounter" class="char-counter text-gray-500 dark:text-gray-400">0/2000</div>
+                </div>
+                
+                <!-- Media Upload -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Add Media (Optional)</label>
+                    <label for="postMedia" class="file-input-label flex flex-col items-center justify-center w-full h-32 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700/50 transition">
+                        <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                            <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Click to upload or drag and drop Media</p>
+                        </div>
+                        <input id="postMedia" type="file" class="hidden" accept="image/*,video/*">
+                    </label>
+                </div>
+                
+                <!-- Media Preview -->
+                <div id="mediaPreviewContainer" class="hidden">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Media Preview</label>
+                    <div class="relative">
+                        <img id="imagePreview" src="#" alt="Preview" class="post-preview w-full rounded-lg border border-gray-200 dark:border-gray-700 hidden">
+                        <video id="videoPreview" controls class="video-preview rounded-lg border border-gray-200 dark:border-gray-700 hidden">
+                            Your browser does not support the video tag.
+                        </video>
+                        <button id="removeMediaBtn" type="button" class="absolute top-2 right-2 bg-red-500 text-white p-2 rounded-full hover:bg-red-600">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Privacy Settings -->
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Privacy</label>
+                    <div class="flex space-x-4">
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="privacy" value="public" checked class="text-purple-600 dark:text-purple-400 border-gray-300 dark:border-gray-600 focus:ring-purple-500">
+                            <span class="ml-2 text-gray-700 dark:text-gray-300">Public</span>
+                        </label>
+                        <label class="inline-flex items-center">
+                            <input type="radio" name="privacy" value="private" class="text-purple-600 dark:text-purple-400 border-gray-300 dark:border-gray-600 focus:ring-purple-500">
+                            <span class="ml-2 text-gray-700 dark:text-gray-300">Private</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <!-- Submit Button -->
+                <div class="pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <button type="submit" id="submitBtn" class="w-full bg-purple-600 hover:bg-purple-700 text-white py-3 px-4 rounded-lg font-semibold flex items-center justify-center">
+                        <span id="submitText">Post</span>
+                        <span id="spinner" class="hidden ml-2">
+                            <i class="fas fa-spinner fa-spin"></i>
+                        </span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around py-2">
+        <a href="/" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">Home</span>
+        </a>
+        <a href="/ai" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-robot text-xl"></i>
+            <span class="text-xs mt-1">AI</span>
+        </a>
+        <a href="create-post.html" class="flex flex-col items-center text-purple-600 dark:text-purple-400">
+            <i class="fas fa-plus-square text-xl"></i>
+            <span class="text-xs mt-1">Create</span>
+        </a>
+        <a href="/notifications" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-bell text-xl"></i>
+            <span class="text-xs mt-1">Notifications</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-xs mt-1">Profile</span>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Dark Mode Toggle
+        document.getElementById('darkModeToggle').addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        });
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+
+        // Media Preview Functionality
+        const postMediaInput = document.getElementById('postMedia');
+        const mediaPreviewContainer = document.getElementById('mediaPreviewContainer');
+        const imagePreview = document.getElementById('imagePreview');
+        const videoPreview = document.getElementById('videoPreview');
+        const removeMediaBtn = document.getElementById('removeMediaBtn');
+
+        postMediaInput.addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                // Hide both previews first
+                imagePreview.classList.add('hidden');
+                videoPreview.classList.add('hidden');
+                
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        imagePreview.src = e.target.result;
+                        imagePreview.classList.remove('hidden');
+                        mediaPreviewContainer.classList.remove('hidden');
+                    }
+                    reader.readAsDataURL(file);
+                } else if (file.type.startsWith('video/')) {
+                    videoPreview.src = URL.createObjectURL(file);
+                    videoPreview.classList.remove('hidden');
+                    mediaPreviewContainer.classList.remove('hidden');
+                }
+            }
+        });
+
+        removeMediaBtn.addEventListener('click', function() {
+            postMediaInput.value = '';
+            mediaPreviewContainer.classList.add('hidden');
+            imagePreview.classList.add('hidden');
+            videoPreview.classList.add('hidden');
+            // Release video object URL to prevent memory leaks
+            if (videoPreview.src) {
+                URL.revokeObjectURL(videoPreview.src);
+                videoPreview.src = '';
+            }
+        });
+
+        // Character counter functionality
+        const postContent = document.getElementById('postContent');
+        const charCounter = document.getElementById('charCounter');
+
+        postContent.addEventListener('input', function() {
+            const currentLength = this.value.length;
+            charCounter.textContent = `${currentLength}/2000`;
+            
+            // Add warning class when approaching limit
+            if (currentLength > 1500) {
+                charCounter.classList.add('warning');
+            } else {
+                charCounter.classList.remove('warning');
+            }
+        });
+
+        // Form Submission
+        document.getElementById('createPostForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            const submitText = document.getElementById('submitText');
+            const spinner = document.getElementById('spinner');
+            
+            // Validate content
+            const content = postContent.value.trim();
+            if (!content) {
+                alert('Post content is required');
+                postContent.focus();
+                return;
+            }
+            
+            if (content.length > 2000) {
+                alert('Post content cannot exceed 2500 characters');
+                postContent.focus();
+                return;
+            }
+
+            // Show loading state
+            submitBtn.disabled = true;
+            submitText.textContent = 'Posting...';
+            spinner.classList.remove('hidden');
+
+            // Get form values
+            const privacy = document.querySelector('input[name="privacy"]:checked').value;
+            const mediaFile = document.getElementById('postMedia').files[0];
+
+            // Convert media to base64 (if uploaded)
+            let base64Media = null;
+            let mediaType = null;
+            
+            if (mediaFile) {
+                const reader = new FileReader();
+                reader.readAsDataURL(mediaFile);
+                base64Media = await new Promise(resolve => {
+                    reader.onload = () => resolve(reader.result);
+                });
+                
+                // Determine media type
+                if (mediaFile.type.startsWith('image/')) {
+                    mediaType = 'image';
+                } else if (mediaFile.type.startsWith('video/')) {
+                    mediaType = 'video';
+                }
+            }
+
+            // Construct JSON data
+            const formData = {
+                content: content,
+                privacy: privacy,
+                type: mediaFile ? mediaType : "text",
+                media: base64Media, // Base64 string or null if no media
+                mediaName: mediaFile ? mediaFile.name : null,
+                mediaSize: mediaFile ? mediaFile.size : null
+            };
+
+            try {
+                const response = await fetch('/create-post', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    // Success - reset form and show success message
+                    document.getElementById('createPostForm').reset();
+                    document.getElementById('mediaPreviewContainer').classList.add('hidden');
+                    imagePreview.classList.add('hidden');
+                    videoPreview.classList.add('hidden');
+                    // Release video object URL
+                    if (videoPreview.src) {
+                        URL.revokeObjectURL(videoPreview.src);
+                        videoPreview.src = '';
+                    }
+                    
+                    // Reset character counter
+                    charCounter.textContent = '0/2500';
+                    charCounter.classList.remove('warning');
+                    
+                    alert('Post created successfully!');
+                    window.location.href = '/profile';
+                } else {
+                    alert(result.message || 'Failed to create post');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Network error. Please try again.');
+            } finally {
+                // Reset button state
+                submitBtn.disabled = false;
+                submitText.textContent = 'Post';
+                spinner.classList.add('hidden');
+            }
+        });
+    </script>
+</body>
+</html>

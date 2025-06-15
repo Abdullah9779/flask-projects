@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@{{ user_data["username"] }} Profile | SnapVide</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .avatar-profile {
+            width: 150px;
+            height: 150px;
+            border: 5px solid white;
+            margin-top: 25px;
+        }
+        
+        .tab-active {
+            border-bottom: 3px solid #7c3aed;
+            color: #7c3aed;
+            font-weight: 600;
+        }
+        
+        .dark .tab-active {
+            border-bottom-color: #8b5cf6;
+            color: #8b5cf6;
+        }
+        
+        .post-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .like-animation {
+            animation: like 0.5s ease;
+        }
+        
+        @keyframes like {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .dark .post-card {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        
+        .filter-active {
+            background-color: #7c3aed;
+            color: white;
+        }
+        
+        .dark .filter-active {
+            background-color: #8b5cf6;
+        }
+        
+        .post-type-filter {
+            display: none;
+        }
+        
+        .post-type-filter.active {
+            display: block;
+        }
+
+        /* Hide scrollbar but keep functionality */
+        .hide-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+        }
+        .hide-scrollbar::-webkit-scrollbar {
+        display: none;
+        }
+
+        /* Smooth transitions for buttons */
+        .filter-btn {
+        transition: color 0.2s ease, transform 0.1s ease;
+        }
+        .filter-btn:active {
+        transform: scale(0.96);
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Navbar -->
+    <nav class="bg-white dark:bg-gray-800 shadow-sm fixed w-full z-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <a href="/" class="flex-shrink-0 flex items-center">
+                        <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                        <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                    </a>
+                </div>
+                <div class="flex items-center">
+                    <!-- filepath: g:\Social Media Site 2\templates\profile_page.html -->
+                    <a id="settingsButton" href="/settings" class="p-2 rounded-full bg-gray-200 dark:bg-gray-700">
+                        <i class="fas fa-cog text-gray-600 dark:text-gray-300"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Header -->
+    <div class="pt-20">
+        
+        <!-- Profile Info -->
+        <div class="max-w-4xl mx-auto px-4 sm:px-6">
+            <div class="flex flex-col md:flex-row md:items-end md:justify-between">
+                <div class="flex flex-col items-center md:flex-row md:items-end">
+                    <!-- Avatar -->
+                    <img src="{{ user_data["profile_data"]["profile_pic"] }}" alt="Profile" class="avatar-profile rounded-full bg-white dark:bg-gray-800 shadow-lg">
+                    
+                    <!-- Name and Basic Info -->
+                    <div class="mt-4 md:ml-6 md:mt-0 text-center md:text-left">
+                        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">{{ user_data["username"] }}</h1>
+                        <p class="text-gray-600 dark:text-gray-300">{{ user_data["profile_data"]["tagline"] }}</p>
+                        
+                        <div class="flex items-center justify-center md:justify-start space-x-4 mt-2 text-sm">
+                            {% if user_data["profile_data"]["location"] %}
+                            <span class="text-gray-600 dark:text-gray-400">
+                                <i class="fas fa-map-marker-alt mr-1"></i>{{ user_data["profile_data"]["location"] }}
+                            </span>
+                            {% endif %}
+                            {% if user_data["profile_data"]["website"] %}
+                            <span class="text-gray-600 dark:text-gray-400">
+                                <i class="fas fa-link mr-1"></i> 
+                                <a href="{{ user_data["profile_data"]["website"] }}" class="text-purple-600 dark:text-purple-400">{{ domain }}</a>
+                            </span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="flex space-x-3 mt-6 md:mt-0 justify-center md:justify-end">
+                    <a href="/create-post" ><button class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg font-medium flex items-center">
+                        <i class="fas fa-plus mr-2"></i> Add Post
+                    </button></a>
+                    
+                </div>
+            </div>
+            
+            <!-- Profile Stats -->
+            <div class="flex border-t border-b border-gray-200 dark:border-gray-700 py-4 mt-6">
+                <div class="text-center px-2">
+                    <div class="font-bold text-gray-900 dark:text-white">{{ user_data["posts"]|length }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Posts</div>
+                </div>
+                <div class="text-center px-2">
+                    <div class="font-bold text-gray-900 dark:text-white">{{ user_data["photos"]|length }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Photos</div>
+                </div>
+                <div class="text-center px-2">
+                    <div class="font-bold text-gray-900 dark:text-white">{{ user_data["followers"]|length }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Followers</div>
+                </div>
+                <div class="text-center px-2">
+                    <div class="font-bold text-gray-900 dark:text-white">{{ user_data["following"]|length }}</div>
+                    <div class="text-sm text-gray-600 dark:text-gray-400">Following</div>
+                </div>
+            </div>
+            
+            <!-- Profile Tabs -->
+            <div class="flex overflow-x-auto mt-4 border-b border-gray-200 dark:border-gray-700">
+                <a href="/profile" class="tab-active px-4 py-3 text-gray-700 dark:text-gray-300 font-medium whitespace-nowrap">
+                    <i class="fas fa-th-large mr-2"></i> Posts
+                </a>
+                <a href="/photos" class="px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium whitespace-nowrap">
+                    <i class="fas fa-image mr-2"></i> Photos
+                </a>
+                <a href="/saved-posts" class="px-4 py-3 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white font-medium whitespace-nowrap">
+                    <i class="fas fa-bookmark mr-2"></i> Saved Posts
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 py-6">
+        <div class="flex flex-col lg:flex-row lg:space-x-6">
+            <!-- Left Column - About -->
+            <div class="lg:w-1/3 mb-6 lg:mb-0">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6">
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">About</h2>
+                    
+                    <div class="space-y-4">
+                        {% if user_data["profile_data"]["bio"] %}
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Bio</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mt-1">
+                                {{ user_data["profile_data"]["bio"] }}
+                            </p>
+                        </div>
+                        {% endif %}
+
+                        {% if user_data["profile_data"]["work"] %}
+                        
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Work</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mt-1">
+                                {{ user_data["profile_data"]["work"] }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        {% if user_data["profile_data"]["education"] %}
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Education</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mt-1">
+                                {{ user_data["profile_data"]["education"] }}
+                            </p>
+                        </div>
+                        {% endif %}
+                        
+                        <div>
+                            <h3 class="font-semibold text-gray-900 dark:text-white">Joined</h3>
+                            <p class="text-gray-600 dark:text-gray-300 mt-1">
+                                {{ user_data["profile_data"]["joined"]|time_ago }}
+                            </p>
+                        </div>
+                        
+                        <a href="edit-profile"><button class="w-full mt-4 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 text-gray-800 dark:text-white py-2 px-4 rounded-lg font-medium">
+                            Edit Profile
+                        </button></a>
+                    </div>
+                </div>
+                
+                <!-- Photos -->
+                {% if user_data["photos"] %}
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 mt-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h2 class="text-xl font-bold text-gray-900 dark:text-white">Photos</h2>
+                        <a href="/photos" class="text-sm text-purple-600 dark:text-purple-400">See All</a>
+                    </div>
+                    
+                    <div class="grid grid-cols-3 gap-2">
+                        
+                        {% for i in user_data["photos"] %}
+                        <img src="{{ user_data["photos"][i] }}" alt="Photo" class="w-full h-24 object-cover rounded-lg">
+                        {% endfor %}
+                        
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+            
+            <!-- Right Column - Posts -->
+            <div class="lg:w-2/3">
+                <!-- Create Post -->
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+                    <div class="flex items-center space-x-3">
+                        <img src="{{ user_data["profile_data"]["profile_pic"] }}" alt="User" class="w-10 h-10 rounded-full">
+                        <input type="text" placeholder="Search" class="bg-gray-100 dark:bg-gray-700 rounded-full py-2 px-4 w-full focus:outline-none">
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <div id="filter-scroller" class="flex space-x-4 overflow-x-auto pb-2 scrollbar-hide">
+                            <button class="filter-btn flex-shrink-0 flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400" data-type="all">
+                                <i class="fas fa-th-large mr-2"></i> All
+                            </button>
+                            <button class="filter-btn flex-shrink-0 flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400" data-type="image">
+                                <i class="fas fa-image mr-2"></i> Photos
+                            </button>
+                            <button class="filter-btn flex-shrink-0 flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400" data-type="video">
+                                <i class="fas fa-video mr-2"></i> Videos
+                            </button>
+                            <button class="filter-btn flex-shrink-0 flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400" data-type="text">
+                                <i class="fas fa-align-left mr-2"></i> Text
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+    
+                
+                <!-- Posts -->
+                {% if user_data %}
+                <div class="space-y-6">
+                    <!-- All Posts (default view) -->
+                    <div id="all-posts" class="post-type-filter active mb-8">
+                        {% for i in user_data["posts"] %}
+                            {% include 'post_template.html' %}
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Image Posts -->
+                    <div id="image-posts" class="post-type-filter mb-8">
+                        {% for i in user_data["posts"] %}
+                            {% if user_data["posts"][i]["type"] == "image" %}
+                                {% include 'post_template.html' %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Video Posts -->
+                    <div id="video-posts" class="post-type-filter mb-8">
+                        {% for i in user_data["posts"] %}
+                            {% if user_data["posts"][i]["type"] == "video" %}
+                                {% include 'post_template.html' %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- Text Posts -->
+                    <div id="text-posts" class="post-type-filter mb-8">
+                        {% for i in user_data["posts"] %}
+                            {% if user_data["posts"][i]["type"] == "text" %}
+                                {% include 'post_template.html' %}
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Dialog box for comments (initially hidden) -->
+    <div id="commentsDialog" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Comments</h3>
+                <button onclick="closeCommentsDialog()" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-times text-gray-500 dark:text-gray-400 text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Comments Container -->
+            <div id="commentsContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Example comment (will be replaced with dynamic content) -->
+                <div class="comment-template hidden">
+                    <div class="flex gap-3">
+                        <img class="w-10 h-10 rounded-full object-cover" alt="User profile">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-gray-900 dark:text-white">USERNAME</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">TIMESTAMP</span>
+                            </div>
+                            <p class="mt-1 text-gray-800 dark:text-gray-200">COMMENT_TEXT</p>
+                            <div class="mt-2 flex gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                <button 
+                                    onclick="toggleCommentLike('COMMENT_ID', 'POST_ID', this, 'User', 'username')" 
+                                    class="like-btn hover:text-purple-600 dark:hover:text-purple-400">
+                                    <i class="far fa-heart"></i> <!-- Default icon -->
+                                </button>
+                                <span class="text-gray-500 dark:text-gray-400">
+                                    <span class="comment-likes-count">0</span> Likes
+                                </span>
+                                <button 
+                                    onclick="deleteComment('COMMENT_ID', 'POST_ID', this, 'User', 'username')" 
+                                    class="delete-btn hover:text-red-600 dark:hover:text-red-400">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loading state -->
+                <div id="commentsLoading" class="flex justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+                </div>
+                
+                <!-- Empty state -->
+                <div id="commentsEmpty" class="hidden text-center py-8">
+                    <i class="far fa-comment-dots text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-gray-500 dark:text-gray-400">No comments yet</p>
+                    <p class="text-sm text-gray-400 mt-1">Be the first to comment!</p>
+                </div>
+            </div>
+            
+            <!-- New Comment Input -->
+            <div class="p-4 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                <div class="flex gap-3">
+                    <img id="currentUserAvatar" class="w-10 h-10 rounded-full object-cover" src="https://snapvibe.share.zrok.io/static/profile_image/{{ user_id }}.png" alt="Your profile">
+                    <div class="flex-1">
+                        <textarea id="newCommentText" 
+                                class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                                placeholder="Write a comment..." 
+                                rows="1"></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            
+                            <button onclick="postComment()" 
+                                    id="postCommentBtn"
+                                    disabled
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Post
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around py-2">
+        <a href="/" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">Home</span>
+        </a>
+        <a href="/ai" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-robot text-xl"></i>
+            <span class="text-xs mt-1">AI</span>
+        </a>
+        <a href="/create-post" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-plus-square text-xl"></i>
+            <span class="text-xs mt-1">Create</span>
+        </a>
+        <a href="/notifications" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-bell text-xl relative">
+                <!-- Red dot, moved a little to the right -->
+                 {% if notifications["is_new_notification"] %}
+                <span class="absolute top-0 left-4 bg-red-500 w-2.5 h-2.5 rounded-full"></span>
+                {% endif %}
+            </i>
+            <span class="text-xs mt-1">Notifications</span>
+            
+        </a>
+        <a href="/profile" class="flex flex-col items-center text-purple-600 dark:text-purple-400">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-xs mt-1">Profile</span>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Dark Mode Toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        });
+        
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+        
+        // Like Button Animation
+        document.querySelectorAll('.post-like').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas', 'like-animation');
+                    // Change color to purple
+                    this.classList.remove('text-gray-600', 'dark:text-gray-300');
+                    this.classList.add('text-purple-600', 'dark:text-purple-400');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    // Revert color
+                    this.classList.add('text-gray-600', 'dark:text-gray-300');
+                    this.classList.remove('text-purple-600', 'dark:text-purple-400');
+                }
+            });
+        });
+
+        // Post Type Filtering
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                // Update active button styling
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.remove('text-purple-600', 'dark:text-purple-400');
+                    btn.classList.add('text-gray-600', 'dark:text-gray-300');
+                });
+                
+                // Add active styles to clicked button
+                this.classList.add('text-purple-600', 'dark:text-purple-400');
+                this.classList.remove('text-gray-600', 'dark:text-gray-300');
+                
+                // Hide all post containers
+                document.querySelectorAll('.post-type-filter').forEach(container => {
+                    container.classList.remove('active');
+                });
+                
+                // Show selected post type
+                const postType = this.getAttribute('data-type');
+                document.getElementById(`${postType}-posts`).classList.add('active');
+            });
+        });
+
+
+        const scroller = document.getElementById('filter-scroller');
+        const fadeLeft = document.getElementById('fade-left');
+        const fadeRight = document.getElementById('fade-right');
+
+        function checkScroll() {
+        const showLeft = scroller.scrollLeft > 0;
+        const showRight = scroller.scrollLeft < (scroller.scrollWidth - scroller.clientWidth);
+        
+        fadeLeft.classList.toggle('hidden', !showLeft);
+        fadeRight.classList.toggle('hidden', !showRight);
+        }
+
+        // Initial check
+        checkScroll();
+
+        // Listen to scroll events
+        scroller.addEventListener('scroll', checkScroll);
+
+        // Optional: Smooth scroll to center active button
+        function centerActiveButton() {
+        const activeBtn = document.querySelector('.filter-btn.text-purple-600, .filter-btn.dark:text-purple-400');
+        if (activeBtn) {
+            const containerWidth = scroller.clientWidth;
+            const btnLeft = activeBtn.offsetLeft;
+            const btnWidth = activeBtn.offsetWidth;
+            
+            scroller.scrollTo({
+            left: btnLeft - (containerWidth / 2) + (btnWidth / 2),
+            behavior: 'smooth'
+            });
+        }
+        }
+
+        function toggleMenu(button) {
+            const menu = button.nextElementSibling;
+            menu.classList.toggle("hidden");
+        }
+    
+        function sendPostRequest(actionType, element) {
+            const postElement = element.closest('.relative'); // Get the closest post container
+            const button = postElement.querySelector("button"); // Find the button inside the post
+            const buttonId = button.id; // Get the button ID
+            const menu = button.nextElementSibling;
+            menu.classList.toggle("hidden");
+    
+            fetch('/post-action', {  
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    action: actionType,
+                    button_id: buttonId
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                alert(data.message);
+                window.location.href = '/profile';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Something went wrong!');
+            });
+        }
+
+
+        function changeprivacy(privacy, post_id) {
+            if (!privacy || !post_id) {
+                console.error("Privacy or Post ID is missing");
+                alert("Invalid input. Please try again.");
+                return;
+            }
+        
+            fetch('/api/change-privacy', {  
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    privacy: privacy,
+                    post_id: post_id,
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Success:', data);
+                alert(data.message);
+                window.location.href = '/profile'; // Redirect only if successful
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Something went wrong! Please try again.');
+            });
+        }
+
+        function sharePhoto(url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this post in SnapVide',
+                    url: url
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                alert('Web Share API not supported in your browser');
+            }
+        }
+
+        document.addEventListener("click", function (event) {
+            let menu = document.getElementById("menuDropdown");
+            let button = document.getElementById("menuButton");
+        
+            // If clicked outside the menu, close it
+            if (!menu.contains(event.target) && !button.contains(event.target)) {
+                menu.classList.add("hidden");
+            } else {
+                menu.classList.toggle("hidden");
+            }
+        });
+        
+
+        function likepost(postId) {
+            if (!postId) {
+                console.error("Post ID is missing");
+                return;
+            }
+        
+            let button = document.getElementById(postId);
+            let isLiked = button.classList.contains("liked"); // Check if already liked
+            let action = isLiked ? "unlike" : "like"; // Toggle action
+        
+            fetch("/like-post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id: postId, action: action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Post Liked") {
+                    button.classList.add("liked");
+                    button.innerHTML = '<i class="fas fa-heart text-red-500"></i>';
+                } else if (data.message === "Post Unliked") {
+                    button.classList.remove("liked");
+                    button.innerHTML = '<i class="far fa-heart"></i>';
+                } else {
+                    console.error("Error:", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Request failed:", error);
+            });
+        }
+
+    </script>
+    <script>
+
+
+        let currentPostId = null;
+        let user_email = null;
+        let image_url = null;
+
+    // Show comments dialog
+function showComments(postId, url, email) {
+        currentPostId = postId;
+        image_url = url;
+        user_email = email;
+        const dialog = document.getElementById('commentsDialog');
+        dialog.classList.remove('hidden');
+
+        // Reset states
+        document.getElementById('commentsLoading').classList.remove('hidden');
+        document.getElementById('commentsEmpty').classList.add('hidden');
+        document.getElementById('commentsContainer').querySelectorAll('.comment-item').forEach(el => el.remove());
+        
+        // Load current user's avatar (replace with your actual implementation)
+        // document.getElementById('currentUserAvatar').src = getCurrentUserAvatar(user_email);
+        
+        // Load comments
+        fetchComments(postId);
+        
+        // Auto-resize textarea
+        const textarea = document.getElementById('newCommentText');
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+            document.getElementById('postCommentBtn').disabled = this.value.trim() === '';
+        });
+    }
+
+    // Fetch comments from server
+    async function fetchComments(postId) {
+        try {
+            // Simulate API delay (remove in production)
+            await new Promise(resolve => setTimeout(resolve, 800));
+            
+            const response = await fetch(`/api/comments?post_id=${postId}`);
+            const comments = await response.json();
+            
+            const container = document.getElementById('commentsContainer');
+            const template = container.querySelector('.comment-template');
+            
+            // Hide loading state
+            document.getElementById('commentsLoading').classList.add('hidden');
+            
+            if (comments.length === 0) {
+                document.getElementById('commentsEmpty').classList.remove('hidden');
+                return;
+            }
+            
+            document.getElementById('commentsEmpty').classList.add('hidden');
+            comments.forEach(comment => {
+                const commentElement = template.cloneNode(true);
+                commentElement.classList.remove('hidden', 'comment-template');
+                commentElement.classList.add('comment-item');
+                
+                // Fill in data
+                const likeButton = commentElement.querySelector('.like-btn');
+                const deleteCommentbtn = commentElement.querySelector('.delete-btn');
+                const currentUserId = "{{ user_id }}";
+                console.log(currentUserId, comment.likes);
+
+                // Check if comment.likes exists and if currentUserId is a key in it
+                isLiked = comment.likes && comment.likes.hasOwnProperty(currentUserId);
+                console.log(isLiked);
+
+                const likesCount = comment.likes ? Object.keys(comment.likes).length : 0;
+
+                commentElement.querySelector('.comment-likes-count').textContent = likesCount;
+                // Update icon classes
+                const icon = likeButton.querySelector('i');
+                icon.classList.add(isLiked ? 'fas' : 'far');
+                icon.classList.remove(isLiked ? 'far' : 'fas');
+
+                likeButton.setAttribute('onclick', `toggleCommentLike('${comment.id}', '${currentPostId}', this, '${comment.user.id}', '${comment.user.name}')`);
+                deleteCommentbtn.setAttribute('onclick', `deleteComment('${comment.id}', '${currentPostId}', this, '${comment.user.id}', '${comment.user.name}')`);
+
+                commentElement.querySelector('img').src = comment.user.avatar || 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png';
+                commentElement.querySelector('img').alt = comment.user.name;
+                commentElement.querySelector('.font-semibold').textContent = comment.user.name;
+                commentElement.querySelector('.text-xs').textContent = formatTimeAgo(comment.timestamp);
+                commentElement.querySelector('p').textContent = comment.content;
+                
+                container.appendChild(commentElement);
+            });
+        } catch (error) {
+            document.getElementById('commentsLoading').innerHTML = `
+                <div class="text-center py-8 text-red-500">
+                    <i class="fas fa-exclamation-circle mr-2"></i>
+                    Failed to load comments
+                </div>
+            `;
+        }
+    }
+
+    function toggleCommentLike(commentId, postId, button, user_id, username) {
+        // Check if the comment is already liked
+        const isLiked = button.querySelector('i').classList.contains('fas');
+
+        console.log(user_id, username);
+    
+        // Toggle the like state
+        if (isLiked) {
+            button.querySelector('i').classList.replace('fas', 'far'); // Change to "unlike"
+            console.log(`Unliked Comment ID: ${commentId}, Post ID: ${postId}`);
+        } else {
+            button.querySelector('i').classList.replace('far', 'fas'); // Change to "like"
+            console.log(`Liked Comment ID: ${commentId}, Post ID: ${postId}`);
+        }
+    
+        // Optionally, send the like/unlike action to the server
+        fetch('/api/toggle-comment-like', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                comment_id: commentId,
+                post_id: postId,
+                user_id: user_id,
+                username: username,
+                action: isLiked ? 'unlike' : 'like',
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                // Revert the UI if the server action fails
+                button.querySelector('i').classList.toggle('fas', !isLiked);
+                button.querySelector('i').classList.toggle('far', isLiked);
+                console.error('Failed to toggle like:', data.message);
+            }
+        })
+        .catch(error => {
+            // Revert the UI on network error
+            button.querySelector('i').classList.toggle('fas', !isLiked);
+            button.querySelector('i').classList.toggle('far', isLiked);
+            console.error('Error toggling like:', error);
+        });
+    }
+
+
+    function deleteComment(commentId, postId, button, user_id, username) {
+        if (!commentId || !postId || !user_id || !username) {
+            return;
+        }
+    
+        if (!confirm("Are you sure you want to delete this comment?")) {
+            return; // Exit if the user cancels the confirmation
+        }
+    
+        // Optimistically remove the comment from the UI
+        const commentElement = button.closest('.comment-item');
+        commentElement.remove();
+    
+        // Send the delete request to the server
+        fetch('/api/delete-comment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                comment_id: commentId,
+                post_id: postId,
+                user_id: user_id,
+                username: username,
+            }),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (!data.success) {
+                alert('Failed to delete the comment. Please try again.');
+                // Re-add the comment to the UI if deletion fails
+                document.getElementById('commentsContainer').appendChild(commentElement);
+            } else {
+                //fetchComments(currentPostId);
+                return; // Exit if deletion is successful
+                
+            }
+        })
+        .catch(error => {
+            alert('Something went wrong. Please try again.');
+            // Re-add the comment to the UI on network error
+            document.getElementById('commentsContainer').appendChild(commentElement);
+        });
+    }
+
+
+
+
+
+
+    // Helper function to format time (e.g., "2 hours ago")
+    function formatTimeAgo(timestamp) {
+        const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+        const intervals = {
+            year: 31536000,
+            month: 2592000,
+            week: 604800,
+            day: 86400,
+            hour: 3600,
+            minute: 60
+        };
+        
+        for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+            const interval = Math.floor(seconds / secondsInUnit);
+            if (interval >= 1) {
+                return interval === 1 ? `${interval} ${unit} ago` : `${interval} ${unit}s ago`;
+            }
+        }
+        return 'Just now';
+    }
+
+    // Post a new comment
+    async function postComment() {
+        const textarea = document.getElementById('newCommentText');
+        const content = textarea.value.trim();
+        if (!content) return;
+        
+        const postBtn = document.getElementById('postCommentBtn');
+        postBtn.disabled = true;
+        postBtn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> Posting...';
+        
+        try {
+            const response = await fetch('/api/comments', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    post_id: currentPostId,
+                    content: content,
+                    email: user_email,
+                    url: image_url
+                })
+            });
+            
+            if (response.ok) {
+                textarea.value = '';
+                textarea.style.height = 'auto';
+
+                const container = document.getElementById('commentsContainer');
+                container.querySelectorAll('.comment-item').forEach(el => el.remove());
+                document.getElementById('commentsLoading').classList.remove('hidden');
+                document.getElementById('commentsEmpty').classList.add('hidden');
+
+                fetchComments(currentPostId); // Refresh comments
+            }
+        } catch (error) {
+            console.error('Error posting comment:', error);
+            alert('Failed to post comment. Please try again.');
+        } finally {
+            postBtn.disabled = false;
+            postBtn.textContent = 'Post';
+        }
+    }
+
+    // Close dialog
+    function closeCommentsDialog() {
+        document.getElementById('commentsDialog').classList.add('hidden');
+        document.getElementById('newCommentText').value = '';
+    }
+
+    // Get current user's avatar (replace with your implementation)
+    function getCurrentUserAvatar(user_email) {
+        if (user_email) {
+            return `https://talented-many-shiner.ngrok-free.app/static/profile_image/${user_email}.png`; // Correct usage of template literal
+        }
+        return 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png';
+    }
+
+
+
+    async function savePost(button) {
+        // Get the postId from data attribute instead of ID
+        const postId = button.dataset.postId;
+        if (!postId) {
+            console.error("Post ID is missing");
+            return;
+        }
+    
+        const icon = button.querySelector('i');
+        
+        // Optimistically update UI first
+        const wasSaved = icon.classList.contains("fas");
+        icon.classList.toggle("fas", !wasSaved);
+        icon.classList.toggle("far", wasSaved);
+        
+        try {
+            const response = await fetch("/save-post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    // "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+                },
+                body: JSON.stringify({
+                    id: postId,
+                    action: wasSaved ? "unsave" : "save"
+                })
+            });
+    
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    
+            const data = await response.json();
+            
+            if (!data.success) {
+                // Revert UI if server failed
+                icon.classList.toggle("fas", wasSaved);
+                icon.classList.toggle("far", !wasSaved);
+                console.error("Server error:", data.message);
+            }
+        } catch (error) {
+            // Revert UI on network error
+            icon.classList.toggle("fas", wasSaved);
+            icon.classList.toggle("far", !wasSaved);
+            console.error("Failed to save post:", error);
+        }
+    }
+
+    
+    </script>
+    <script>
+document.addEventListener('click', function (event) {
+    if (event.target.closest('.filter-btn')) {
+        const button = event.target.closest('.filter-btn');
+        
+        // Update active button styling
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.classList.remove('text-purple-600', 'dark:text-purple-400');
+            btn.classList.add('text-gray-600', 'dark:text-gray-300');
+        });
+        
+        // Add active styles to clicked button
+        button.classList.add('text-purple-600', 'dark:text-purple-400');
+        button.classList.remove('text-gray-600', 'dark:text-gray-300');
+        
+        // Hide all post containers
+        document.querySelectorAll('.post-type-filter').forEach(container => {
+            container.classList.remove('active');
+        });
+        
+        // Show selected post type
+        const postType = button.getAttribute('data-type');
+        document.getElementById(`${postType}-posts`).classList.add('active');
+    }
+});
+</script>
+</body>
+</html>

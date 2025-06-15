@@ -1,0 +1,1791 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | SnapVibe</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #f9fafb;
+        }
+        
+        .story-ring {
+            background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
+        }
+        
+        .post-hover:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-item:hover {
+            background-color: rgba(124, 58, 237, 0.1);
+        }
+        
+        .sidebar-item.active {
+            background-color: rgba(124, 58, 237, 0.1);
+            border-left: 3px solid #7c3aed;
+        }
+        
+        .like-animation {
+            animation: like 0.5s ease;
+        }
+        
+        @keyframes like {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+        
+        .dark .post-card {
+            background-color: #1f2937;
+            border-color: #374151;
+        }
+        
+        .dark .trending-card {
+            background-color: #1f2937;
+        }
+
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .filter-btn.active {
+            background-color: #7c3aed;
+            color: white;
+        }
+
+        /* Story Viewer Styles */
+        #storyViewer {
+            transition: opacity 0.3s ease;
+        }
+
+        #storyViewer video,
+        #storyViewer img {
+            max-height: 100vh;
+        }
+
+        .story-progress {
+            height: 2px;
+            background-color: rgba(255, 255, 255, 0.3);
+            position: relative;
+        }
+
+        .story-progress-bar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            background-color: white;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+
+
+
+
+        /* Story Viewer Styles */
+        #storyViewer {
+            transition: opacity 0.3s ease;
+        }
+
+        #storyViewer video, 
+        #storyViewer img {
+            max-height: 100vh;
+        }
+
+        #storyViewer .bg-opacity-50 {
+            backdrop-filter: blur(10px);
+        }
+
+        select#additionalFilters {
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+
+        #storyViewer {
+            transition: opacity 0.3s ease-in-out;
+        }
+        
+        #storyViewer .bg-opacity-90 {
+            backdrop-filter: blur(10px);
+        }
+        
+        #storyProgressBar {
+            width: 0%; /* Dynamically updated via JavaScript */
+        }
+
+        #storyViewer video,
+        #storyViewer img {
+            max-height: 90vh;
+            max-width: 100%;
+            object-fit: contain; /* Ensures the entire content fits within the container */
+        }
+
+
+        #viewersDropdown {
+            transition: all 0.3s ease-in-out;
+        }
+    
+        #viewersDropdownButton:hover {
+            background-color: #f3f4f6; /* Light gray for hover */
+        }
+    
+        #viewersDropdown li:hover {
+            background-color: #e5e7eb; /* Slightly darker gray for hover */
+        }
+    
+        #dropdownIcon {
+            transition: transform 0.3s ease;
+        }
+    
+        #dropdownIcon.fa-chevron-up {
+            transform: rotate(180deg);
+        }
+
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900">
+    <!-- Main Container -->
+    <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <div class="hidden md:flex md:flex-shrink-0">
+            <div class="flex flex-col w-64 border-r border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <!-- Logo -->
+                <div class="flex items-center h-16 px-4 border-b border-gray-200 dark:border-gray-700">
+                    <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-purple-600 dark:text-purple-400">Snapvibe</span>
+                </div>
+                
+                <!-- Navigation -->
+                <div class="flex flex-col flex-grow px-2 py-2 overflow-y-auto">
+                    <nav class="flex-1 space-y-2">
+                        <a href="/" class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-900 dark:text-white">
+                            <i class="fas fa-home mr-3 text-xl text-purple-600"></i>
+                            Home
+                        </a>
+                        <a href="/ai" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-robot text-xl mr-3"></i>
+                            AI Assistant
+                        </a>
+                        <a href="/notifications" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white relative">
+                            <i class="fas fa-bell mr-3 text-xl relative">
+                                <!-- Red dot -->
+                                {% if notifications["is_new_notification"] %}
+                                <span class="absolute top-0 left-4 bg-red-500 w-2 h-2 rounded-full"></span>
+                                {% endif %}
+                            </i>
+                            Notifications
+                        </a>
+                        <a href="/search" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-search text-xl mr-3"></i>
+                            Search
+                        </a>
+                        <a href="/saved-posts" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-bookmark text-xl mr-3"></i>
+                            Saved Posts
+                        </a>
+                        <a href="/profile" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-user text-xl mr-3"></i>
+                            Profile
+                        </a>
+                    </nav>
+                    
+                    <!-- Create Post Button -->
+                    <a href="create-post"><button class="mt-4 w-full bg-purple-600 hover:bg-purple-700 text-white py-2 px-4 rounded-lg font-medium transition duration-300">
+                        <i class="fas fa-plus mr-2"></i> Create Post
+                    </button></a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Mobile Header -->
+            <header class="md:hidden flex items-center justify-between px-4 py-3 border-b border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+                <div class="flex items-center">
+                    <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                    <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button id="mobileMenuButton">
+                        <i class="fas fa-bars text-gray-600 dark:text-gray-300 text-xl"></i>
+                    </button>
+                    <a href="/search">
+                        <i class="fas fa-search text-gray-600 dark:text-gray-300 text-xl"></i>
+                    </a>
+                </div>
+            </header>
+            
+            <!-- Mobile Sidebar (Hidden) -->
+            <div id="mobileSidebar" class="hidden md:hidden fixed inset-0 z-50 bg-black bg-opacity-50">
+                <div class="flex flex-col w-4/5 h-full bg-white dark:bg-gray-800">
+                    <div class="flex justify-between items-center p-4 border-b border-gray-200 dark:border-gray-700">
+                        <div class="flex items-center">
+                            <i class="fas fa-users text-purple-600 dark:text-purple-400 text-2xl mr-2"></i>
+                            <span class="text-xl font-bold text-purple-600 dark:text-purple-400">SnapVide</span>
+                        </div>
+                        <button id="closeMobileMenu">
+                            <i class="fas fa-times text-gray-600 dark:text-gray-300"></i>
+                        </button>
+                    </div>
+                    <nav class="flex-1 p-4 space-y-2">
+                        <a href="/" class="sidebar-item active flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-900 dark:text-white">
+                            <i class="fas fa-home mr-3 text-purple-600"></i>
+                            Home
+                        </a>
+                        <a href="/ai" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-robot mr-3"></i>
+                            AI Assistant
+                        </a>
+                        <a href="/notifications" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-bell mr-3 relative ">
+                                {% if notifications["is_new_notification"] %}
+                                <span class="absolute top-0 left-2 bg-red-500 w-2 h-2 rounded-full"></span>
+                                {% endif %}
+                            </i>
+                            Notifications
+                        </a>
+                        <a href="/search" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-search mr-3"></i>
+                            Search
+                        </a>
+                        <a href="/saved-posts" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-bookmark mr-3"></i>
+                            Saved Posts
+                        </a>
+                        <a href="/profile" class="sidebar-item flex items-center px-4 py-3 text-sm font-medium rounded-lg text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white">
+                            <i class="fas fa-user mr-3"></i>
+                            Profile
+                        </a>
+                    </nav>
+                </div>
+            </div>
+            
+            <!-- Content Area -->
+            <div class="flex-1 overflow-y-auto">
+                <div class="max-w-4xl mx-auto p-4 md:p-6 mb-16">
+
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+                        <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Stories</h2>
+                        <div class="flex space-x-4 overflow-x-auto pb-2">
+
+
+                            <!-- User Story Item -->
+                            {% if user_id in story_data %}
+                                {% if story_data[user_id]["timestamp"]|is_within_24_hours %}
+                                <div class="flex flex-col items-center space-y-1 flex-shrink-0 cursor-pointer" onclick="openStoryupdatesDialog('{{ story_data[user_id]["username"] }}', '{{ story_data[user_id]["timestamp"] }}', [ {{ story_data[user_id]["story_views"] }} ], '{{ story_data[user_id]["story_views"]|length }}');">
+                                    <div class="relative">
+                                        <div class="story-ring w-16 h-16 rounded-full flex items-center justify-center p-0.5">
+                                            <div class="bg-white dark:bg-gray-800 w-full h-full rounded-full flex items-center justify-center overflow-hidden relative">
+                                                <!-- Profile or any image -->
+                                                <img src="{{ profile_image_url }}" alt="Profile" class="w-full h-full object-cover">
+                                            
+                                                <!-- Small tick in bottom-right corner -->
+                                                
+                                            </div>
+                                            <div class="absolute bottom-1 right-1 bg-blue-500 rounded-full p-1">
+                                                <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                                                </svg>
+                                            </div>
+                                            
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-gray-700 dark:text-gray-300">Add Story</span>
+                                </div>
+                                {% else %}
+                                <div class="flex flex-col items-center space-y-1 flex-shrink-0 cursor-pointer" onclick="openStoryUploadDialog()">
+                                    <div class="relative">
+                                        <div class="story-ring w-16 h-16 rounded-full flex items-center justify-center p-0.5">
+                                            <div class="bg-white dark:bg-gray-800 w-full h-full rounded-full flex items-center justify-center overflow-hidden">
+                                                <i class="fas fa-plus text-purple-600 text-2xl"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs text-gray-700 dark:text-gray-300">Add Story</span>
+                                </div>
+                                {% endif %}
+
+                            {% else %}
+                            <div class="flex flex-col items-center space-y-1 flex-shrink-0 cursor-pointer" onclick="openStoryUploadDialog()">
+                                <div class="relative">
+                                    <div class="story-ring w-16 h-16 rounded-full flex items-center justify-center p-0.5">
+                                        <div class="bg-white dark:bg-gray-800 w-full h-full rounded-full flex items-center justify-center overflow-hidden">
+                                            <i class="fas fa-plus text-purple-600 text-2xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-700 dark:text-gray-300">Add Story</span>
+                            </div>
+                            {% endif %}
+
+
+                            <!-- User Story -->
+                            {% if story_data %}
+                            {% for i in user_following_list %}
+                            {% if i in story_data and story_data[i]["timestamp"] %}
+                            {% if story_data[i]["timestamp"]|is_within_24_hours %}
+                            <div class="flex flex-col items-center space-y-1 flex-shrink-0 cursor-pointer" onclick="showStory('{{ story_data[i]["username"] }}', '{{ story_data[i]["story"] }}', '{{ story_data[i]["media_type"] }}', '{{ story_data[i]["timestamp"] }}', '{{ story_data[i]["profile_pic"] }}', '{{ story_data[i]["user_id"] }}', '{% if user_id in story_data[i]["likes"]|list %}True{% else %}False{% endif %}')">
+                                <div class="relative">
+                                    <div class="{% if user_id not in story_data[i]["story_views"]|list %}story-ring{% endif %} w-16 h-16 rounded-full flex items-center justify-center p-0.5">
+
+                                        <div class="bg-white dark:bg-gray-800 w-full h-full rounded-full flex items-center justify-center overflow-hidden">
+                                            <img src="{{ story_data[i]["profile_pic"] }}" alt="User" class="w-full h-full object-cover">
+                                        </div>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-gray-700 dark:text-gray-300">{{ story_data[i]["username"] }}</span>
+                            </div>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                            {% endif %}
+                        </div>
+                        
+                    </div>
+                    
+                    <!-- Create Post Card -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 mb-6">
+                        <div class="flex items-center space-x-3">
+                            <img src="{{ profile_image_url }}" alt="User" class="w-10 h-10 rounded-full flex-shrink-0">
+                            <input 
+                                type="text" 
+                                placeholder="Search" 
+                                class="bg-gray-100 dark:bg-gray-700 rounded-full py-2 px-4 w-full focus:outline-none"
+                                id="searchInput"
+                                onkeydown="if(event.key === 'Enter') { handleSearch() }"
+                            >
+                        </div>
+
+                        <script>
+                            function handleSearch() {
+                                const searchInput = document.getElementById('searchInput');
+                                const query = searchInput.value.trim();
+                                
+                                if (query) {
+                                    window.location.href = `/search`;
+                                }
+                            }
+                        </script>
+                        <div class="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div class="flex space-x-4 overflow-x-auto pb-2 -mx-2 px-2 scrollbar-hide">
+                                <button class="filter-btn flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 whitespace-nowrap px-3 py-1 rounded-lg bg-gray-100 dark:bg-gray-700">
+                                    <i class="fas fa-th-large mr-2"></i> All
+                                </button>
+                                <button id="showPhotos" class="filter-btn flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 whitespace-nowrap px-3 py-1 rounded-lg">
+                                    <i class="fas fa-image mr-2"></i> Photos
+                                </button>
+                                <button id="showVideos" class="filter-btn flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 whitespace-nowrap px-3 py-1 rounded-lg">
+                                    <i class="fas fa-video mr-2"></i> Videos
+                                </button>
+                                <button id="showText" class="filter-btn flex items-center text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 whitespace-nowrap px-3 py-1 rounded-lg">
+                                    <i class="fas fa-align-left mr-2"></i> Text
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Posts -->
+                    <div id="postsContainer" class="space-y-6">
+                        <!-- Posts will be dynamically appended here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Story Viewer Modal -->
+    <div id="storyViewer" class="hidden fixed inset-0 z-50 bg-black bg-opacity-90 flex items-center justify-center transition-opacity duration-300">
+        <div class="relative w-full h-full max-w-lg max-h-screen mx-auto flex flex-col items-center rounded-lg overflow-hidden shadow-lg bg-gray-900">
+            <!-- Header -->
+            <div class="flex items-center justify-between w-full px-4 py-3 bg-gray-800 bg-opacity-80">
+                <div class="flex items-center space-x-3">
+                    <img id="storyUserAvatar" class="w-10 h-10 rounded-full border-2 border-purple-500 shadow-md" src="" alt="User">
+                    <div>
+                        <p id="storyUsername" class="text-white font-semibold text-sm"></p>
+                        <p id="storytime" class="text-xs text-gray-400"></p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <button id="playBtn" onclick="togglePlay()" class="text-white hover:text-purple-400 transition px-3 py-2">
+                        <i class="fas fa-pause"></i>
+                    </button>
+                    <button id="muteBtn" onclick="toggleMute()" class="text-white hover:text-purple-400 transition px-3 py-2">
+                        <i class="fas fa-volume-up"></i>
+                    </button>
+                    <button onclick="togglePlay2(), closeStory()" class="text-white hover:text-red-500 transition px-3 py-2">
+                        <i class="fas fa-times text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Story Content -->
+            <div class="relative flex-1 w-full flex items-center justify-center bg-black">
+                <!-- Loading Indicator -->
+                <div id="storyLoading" class="absolute inset-0 flex items-center justify-center hidden">
+                    <div class="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-purple-500"></div>
+                </div>
+
+                <!-- Video Story -->
+                <video onclick="togglePlay()" id="storyVideo" class="w-full h-full hidden rounded-lg shadow-lg" loop></video>
+
+                <!-- Image Story -->
+                <img id="storyImage" class="w-full h-full hidden rounded-lg shadow-lg" src="" alt="Story">
+            </div>
+        </div>
+    </div>
+
+    <!-- Story Upload Dialog -->
+    <div id="storyUploadDialog" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto p-6">
+            <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Add a Story</h3>
+            <form id="storyUploadForm" enctype="multipart/form-data">
+                <label class="block mb-4">
+                    <span class="text-gray-700 dark:text-gray-300">Select Image or Video</span>
+                    <input type="file" id="storyFileInput" accept="image/*,video/*" class="mt-2 block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-purple-50 file:text-purple-700 hover:file:bg-purple-100" onchange="previewStory()">
+                </label>
+
+                <!-- Preview Section -->
+                <div id="storyPreview" class="hidden mb-4">
+                    <video id="videoPreview" class="w-full hidden rounded-lg"></video>
+                    <img id="imagePreview" class="w-full hidden rounded-lg" alt="Preview">
+                </div>
+
+                <!-- Editing Controls -->
+                <div id="editingControls" class="hidden mb-4">
+                    <label class="block mb-2">
+                        <span class="text-gray-700 dark:text-gray-300">Brightness</span>
+                        <input type="range" id="brightnessControl" min="0" max="200" value="100" class="w-full" onchange="applyFilters()">
+                    </label>
+                    <label class="block mb-2">
+                        <span class="text-gray-700 dark:text-gray-300">Contrast</span>
+                        <input type="range" id="contrastControl" min="0" max="200" value="100" class="w-full" onchange="applyFilters()">
+                    </label>
+
+                    <!-- Dropdown Menu for Additional Filters -->
+                    <label class="block mb-2">
+                        <span class="text-gray-700 dark:text-gray-300">Additional Filters</span>
+                        <select id="additionalFilters" class="w-full p-2 border rounded-lg dark:bg-gray-700 dark:border-gray-600" onchange="applyFilters()">
+                            <option value="none">None</option>
+                            <option value="grayscale(100%)">Grayscale</option>
+                            <option value="sepia(100%)">Sepia</option>
+                            <option value="invert(100%)">Invert</option>
+                            <option value="hue-rotate(90deg)">Hue Rotate</option>
+                        </select>
+                    </label>
+
+                    <!-- Reset Button -->
+                    <button type="button" onclick="resetFilters()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600">
+                        Reset
+                    </button>
+                </div>
+
+                <div class="flex justify-end space-x-4">
+                    <button type="button" onclick="closeStoryUploadDialog()" class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600">Cancel</button>
+                    <button type="button" onclick="uploadStory()" class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700">Upload</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {% if user_id in story_data %}
+
+    <!-- Story Updates Dialog -->
+    <div id="storyUpdatesDialog" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-md max-h-[90vh] flex flex-col">
+            <!-- Header with gradient -->
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-600 p-4 rounded-t-xl">
+                <div class="flex justify-between items-center">
+                    <h3 class="text-xl font-bold text-white">Daily one story</h3>
+                    <button onclick="closeStoryUpdatesDialog()" class="text-white hover:text-gray-200 transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- Content -->
+            <div class="flex-1 overflow-y-auto p-6">
+                <!-- Story Info Card -->
+                <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-4 mb-6">
+                    <div class="flex items-center space-x-4 mb-4">
+                        <img id="storyUserAvatarDetails" class="w-12 h-12 rounded-full border-2 border-purple-500" src="{{ story_data[user_id]["profile_pic"] }}" alt="User">
+                        <div>
+                            <h4 id="storyUsernameDetails" class="font-semibold text-gray-900 dark:text-white"></h4>
+                            <p id="storyTimeAgo" class="text-sm text-gray-500 dark:text-gray-400"></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-3 gap-2 text-center">
+                        <div class="bg-white dark:bg-gray-600 p-2 rounded-lg">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Views</p>
+                            <p id="storyViewsCount" class="font-bold text-purple-600 dark:text-purple-400">0</p>
+                        </div>
+                        <!-- <div class="bg-white dark:bg-gray-600 p-2 rounded-lg">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Replies</p>
+                            <p id="storyRepliesCount" class="font-bold text-purple-600 dark:text-purple-400">0</p>
+                        </div>
+                        <div class="bg-white dark:bg-gray-600 p-2 rounded-lg">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Shares</p>
+                            <p id="storySharesCount" class="font-bold text-purple-600 dark:text-purple-400">0</p>
+                        </div> -->
+                    </div>
+                </div>
+                
+                <!-- Action Buttons -->
+                <div class="grid grid-cols-2 gap-3 mb-6">
+                    <button onclick="closeStoryUpdatesDialog(), showStory('{{ story_data[user_id]["username"] }}', '{{ story_data[user_id]["story"] }}', '{{ story_data[user_id]["media_type"] }}', '{{ story_data[user_id]["timestamp"] }}', '{{ story_data[user_id]["profile_pic"] }}', '{{ story_data[user_id]["user_id"] }}', '{% if user_id in story_data[user_id]["likes"]|list %}True{% else %}False{% endif %}')" class="px-4 py-2.5 bg-purple-100 dark:bg-gray-700 text-purple-600 dark:text-purple-400 rounded-lg hover:bg-purple-200 dark:hover:bg-gray-600 transition font-medium flex items-center justify-center">
+                        <i class="fas fa-eye mr-2"></i> Preview
+                    </button>
+                    <button onclick="deleteStory('{{ story_data[user_id]["username"] }}', '{{ story_data[user_id]["user_id"] }}')" class="px-4 py-2.5 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-200 dark:hover:bg-red-800/30 transition font-medium flex items-center justify-center">
+                        <i class="fas fa-trash-alt mr-2"></i> Delete
+                    </button>
+                </div>
+                
+                <!-- Viewers Section -->
+                <div>
+                    <div class="flex justify-between items-center mb-3">
+                        <h4 class="font-semibold text-gray-900 dark:text-white">Viewers</h4>
+                        <span id="viewersCount" class="text-sm text-gray-500 dark:text-gray-400">0 people</span>
+                    </div>
+                    
+                    <!-- Viewers Dropdown -->
+                    <div class="relative mb-4">
+                        <button id="viewersDropdownButton" onclick="toggleViewersDropdown()" 
+                                class="w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg flex justify-between items-center hover:bg-gray-200 dark:hover:bg-gray-600 transition">
+                            <span>Viewer List</span>
+                            <i id="dropdownIcon" class="fas fa-chevron-down transition-transform"></i>
+                        </button>
+                        <ul id="viewersDropdown" class="hidden absolute z-10 mt-1 w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg overflow-hidden border border-gray-200 dark:border-gray-700 max-h-60 overflow-y-auto">
+                            <!-- Viewers will be added here -->
+                            <li class="px-4 py-3 text-center text-sm text-gray-500 dark:text-gray-400">
+                                Loading viewers...
+                            </li>
+                        </ul>
+                    </div>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% endif %}
+
+    <!-- Dialog box for comments (initially hidden) -->
+    <div id="commentsDialog" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md max-h-[90vh] flex flex-col">
+            <!-- Header -->
+            <div class="flex justify-between items-center p-4 border-b dark:border-gray-700">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white">Comments</h3>
+                <button onclick="closeCommentsDialog()" class="p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition">
+                    <i class="fas fa-times text-gray-500 dark:text-gray-400 text-lg"></i>
+                </button>
+            </div>
+            
+            <!-- Comments Container -->
+            <div id="commentsContainer" class="flex-1 overflow-y-auto p-4 space-y-4">
+                <!-- Example comment (will be replaced with dynamic content) -->
+                <div class="comment-template hidden">
+                    <div class="flex gap-3">
+                        <img class="w-10 h-10 rounded-full object-cover" alt="User profile">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-2">
+                                <span class="font-semibold text-gray-900 dark:text-white">USERNAME</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">TIMESTAMP</span>
+                            </div>
+                            <p class="mt-1 text-gray-800 dark:text-gray-200">COMMENT_TEXT</p>
+                            <div class="mt-2 flex gap-4 text-sm text-gray-500 dark:text-gray-400">
+                                <button 
+                                    onclick="toggleCommentLike('COMMENT_ID', 'POST_ID', this, 'User', 'username')" 
+                                    class="like-btn hover:text-purple-600 dark:hover:text-purple-400">
+                                    <i class="far fa-heart"></i> <!-- Default icon -->
+                                </button>
+                                <span class="text-gray-500 dark:text-gray-400">
+                                    <span class="comment-likes-count">0</span> Likes
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Loading state -->
+                <div id="commentsLoading" class="flex justify-center py-8">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-purple-500"></div>
+                </div>
+                
+                <!-- Empty state -->
+                <div id="commentsEmpty" class="hidden text-center py-8">
+                    <i class="far fa-comment-dots text-3xl text-gray-400 mb-2"></i>
+                    <p class="text-gray-500 dark:text-gray-400">No comments yet</p>
+                    <p class="text-sm text-gray-400 mt-1">Be the first to comment!</p>
+                </div>
+            </div>
+            
+            <!-- New Comment Input -->
+            <div class="p-4 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+                <div class="flex gap-3">
+                    <img id="currentUserAvatar" class="w-10 h-10 rounded-full object-cover" src="{{ profile_image_url }}" alt="Your profile">
+                    <div class="flex-1">
+                        <textarea id="newCommentText" 
+                                class="w-full p-3 border rounded-lg dark:bg-gray-700 dark:border-gray-600 focus:ring-2 focus:ring-purple-500 focus:border-transparent" 
+                                placeholder="Write a comment..." 
+                                rows="1"></textarea>
+                        <div class="flex justify-between items-center mt-2">
+                            
+                            <button onclick="postComment()" 
+                                    id="postCommentBtn"
+                                    disabled
+                                    class="px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                                Post
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Mobile Bottom Navigation -->
+    <div class="md:hidden fixed bottom-0 left-0 right-0 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 flex justify-around py-2">
+        <a href="/" class="flex flex-col items-center text-purple-600 dark:text-purple-400">
+            <i class="fas fa-home text-xl"></i>
+            <span class="text-xs mt-1">Home</span>
+        </a>
+        <a href="/ai" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-robot text-xl"></i>
+            <span class="text-xs mt-1">AI</span>
+        </a>
+        <a href="/create-post" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-plus-square text-xl"></i>
+            <span class="text-xs mt-1">Create</span>
+        </a>
+        <a href="/notifications" class="flex flex-col items-center text-gray-600 dark:text-gray-300 relative">
+            <i class="fas fa-bell text-xl relative">
+                <!-- Red dot, moved a little to the right -->
+                 {% if notifications["is_new_notification"] %}
+                <span class="absolute top-0 left-4 bg-red-500 w-2.5 h-2.5 rounded-full"></span>
+                {% endif %}
+            </i>
+            <span class="text-xs mt-1">Notifications</span>
+        </a>
+        <a href="/profile" class="flex flex-col items-center text-gray-600 dark:text-gray-300">
+            <i class="fas fa-user text-xl"></i>
+            <span class="text-xs mt-1">Profile</span>
+        </a>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.documentElement.classList.add('dark');
+        }
+        
+        // Mobile Menu Toggle
+        const mobileMenuButton = document.getElementById('mobileMenuButton');
+        const closeMobileMenu = document.getElementById('closeMobileMenu');
+        const mobileSidebar = document.getElementById('mobileSidebar');
+        
+        mobileMenuButton.addEventListener('click', () => {
+            mobileSidebar.classList.remove('hidden');
+        });
+        
+        closeMobileMenu.addEventListener('click', () => {
+            mobileSidebar.classList.add('hidden');
+        });
+        
+        // Story Viewer Functions
+        let currentStoryVideo = null;
+        let currentStoryId = null;
+        let currentStoryUsername = null;
+
+        
+
+        async function showStory(username, mediaUrl, mediaType, storytimestamp, profile_pic, user_id) {
+            const storyVideo = document.getElementById('storyVideo');
+            const storyImage = document.getElementById('storyImage');
+            const storyUserAvatar = document.getElementById('storyUserAvatar');
+            const storyUsername = document.getElementById('storyUsername');
+            const storytime = document.getElementById('storytime');
+            const playBtn = document.getElementById('playBtn');
+            const muteBtn = document.getElementById('muteBtn');
+            const storyLoading = document.getElementById('storyLoading');
+
+            // Show loading indicator
+            storyLoading.classList.remove('hidden');
+
+            // Set user info
+            storyUsername.textContent = username;
+            storytime.textContent = formatTimeAgo(storytimestamp);
+            storyUserAvatar.src = profile_pic;
+            currentStoryId = user_id;
+            currentStoryUsername = username;
+
+            if (mediaType === 'video') {
+                storyVideo.src = mediaUrl;
+                storyVideo.classList.remove('hidden');
+                storyImage.classList.add('hidden');
+                playBtn.classList.remove('hidden');
+                muteBtn.classList.remove('hidden');
+
+                storyVideo.onloadeddata = () => {
+                    storyLoading.classList.add('hidden'); // Hide loading indicator when video is ready
+                    storyVideo.play();
+                };
+            } else {
+                storyImage.src = mediaUrl;
+                storyImage.classList.remove('hidden');
+                storyVideo.classList.add('hidden');
+                playBtn.classList.add('hidden');
+                muteBtn.classList.add('hidden');
+
+                storyImage.onload = () => {
+                    storyLoading.classList.add('hidden'); // Hide loading indicator when image is ready
+                };
+            }
+
+            storyViewer.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+
+
+            fetch("/add-story-views", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ username: username,  profile_pic: profile_pic, user_id: user_id})
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Received:", data);
+                // you can redirect or update the DOM here
+            });
+
+        }
+
+        function closeStory() {
+            const storyViewer = document.getElementById('storyViewer');
+            const storyVideo = document.getElementById('storyVideo');
+            
+            if (currentStoryVideo) {
+                storyVideo.pause();
+                storyVideo.currentTime = 0;
+                currentStoryVideo = null;
+            }
+            
+            storyViewer.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+
+        function toggleMute() {
+            const storyVideo = document.getElementById('storyVideo');
+            const muteBtn = document.getElementById('muteBtn');
+            storyVideo.muted = !storyVideo.muted;
+            muteBtn.innerHTML = storyVideo.muted
+                ? '<i class="fas fa-volume-mute"></i>'
+                : '<i class="fas fa-volume-up"></i>';
+        }
+
+        function togglePlay() {
+            const storyVideo = document.getElementById('storyVideo');
+            const playBtn = document.getElementById('playBtn');
+            if (storyVideo.paused) {
+                storyVideo.play();
+                playBtn.innerHTML = '<i class="fas fa-pause"></i>';
+            } else {
+                storyVideo.pause();
+                playBtn.innerHTML = '<i class="fas fa-play"></i>';
+            }
+        }
+
+        function togglePlay2() {
+            const storyVideo = document.getElementById('storyVideo');
+            if (storyVideo.paused) {
+                return;
+            } else {
+                storyVideo.pause();
+            }
+        }
+
+        // Close story when clicking outside content
+        document.getElementById('storyViewer').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStory();
+            }
+        });
+
+        // Keyboard controls
+        document.addEventListener('keydown', function(e) {
+            if (document.getElementById('storyViewer').classList.contains('hidden')) return;
+            
+            if (e.key === 'Escape') {
+                closeStory();
+            } else if (e.key === ' ') {
+                togglePlay();
+            } else if (e.key === 'm') {
+                toggleMute();
+            }
+        });
+
+        // Like Button Animation
+        document.querySelectorAll('.post-like').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas', 'like-animation');
+                    // Change color to purple
+                    this.classList.remove('text-gray-600', 'dark:text-gray-300');
+                    this.classList.add('text-purple-600', 'dark:text-purple-400');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    // Revert color
+                    this.classList.add('text-gray-600', 'dark:text-gray-300');
+                    this.classList.remove('text-purple-600', 'dark:text-purple-400');
+                }
+            });
+        });
+
+        document.querySelectorAll('.save-post').forEach(button => {
+            button.addEventListener('click', function() {
+                const icon = this.querySelector('i');
+                if (icon.classList.contains('far')) {
+                    icon.classList.remove('far');
+                    icon.classList.add('fas', 'like-animation');
+                    // Change color to purple
+                    this.classList.remove('text-gray-600', 'dark:text-gray-300');
+                    this.classList.add('text-purple-600', 'dark:text-purple-400');
+                } else {
+                    icon.classList.remove('fas');
+                    icon.classList.add('far');
+                    // Revert color
+                    this.classList.add('text-gray-600', 'dark:text-gray-300');
+                    this.classList.remove('text-purple-600', 'dark:text-purple-400');
+                }
+            });
+        });
+
+        function sharePhoto(url) {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Check out this post in SnapVide',
+                    url: url
+                }).catch(err => {
+                    console.log('Error sharing:', err);
+                });
+            } else {
+                // Fallback for browsers that don't support Web Share API
+                alert('Web Share API not supported in your browser');
+            }
+        }
+
+        function likepost(postId) {
+            if (!postId) {
+                console.error("Post ID is missing");
+                return;
+            }
+        
+            let button = document.getElementById(postId);
+            let isLiked = button.classList.contains("liked"); // Check if already liked
+            let action = isLiked ? "unlike" : "like"; // Toggle action
+        
+            fetch("/like-post", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ id: postId, action: action })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message === "Post Liked") {
+                    button.classList.add("liked");
+                    button.innerHTML = '<i class="fas fa-heart text-red-500"></i>';
+                } else if (data.message === "Post Unliked") {
+                    button.classList.remove("liked");
+                    button.innerHTML = '<i class="far fa-heart"></i>';
+                } else {
+                    console.error("Error:", data.message);
+                }
+            })
+            .catch(error => {
+                console.error("Request failed:", error);
+            });
+        }
+
+
+        function toggleLike(button) {
+            const icon = button.querySelector('i');
+            const likesCount = button.closest('.p-4').querySelector('.likes-count');
+            let count = parseInt(likesCount.textContent.replace(/,/g, ''));
+
+            if (icon.classList.contains('far')) {
+                icon.classList.replace('far', 'fas');
+                icon.classList.add('text-red-500');
+                count++;
+                button.style.transform = 'scale(1.2)';
+                setTimeout(() => { button.style.transform = 'scale(1)' }, 200);
+            } else {
+                icon.classList.replace('fas', 'far');
+                icon.classList.remove('text-red-500');
+                count--;
+            }
+
+            likesCount.textContent = count.toLocaleString();
+        }
+
+        // Double click to like
+        document.querySelectorAll('.bg-gray-200').forEach(imageContainer => {
+            imageContainer.addEventListener('dblclick', function () {
+                const likeBtn = this.nextElementSibling.querySelector('.like-btn');
+                toggleLike(likeBtn);
+                const heart = document.createElement('div');
+                heart.innerHTML = '<i class="fas fa-heart text-6xl text-white absolute"></i>';
+                heart.className = 'absolute inset-0 flex items-center justify-center animate-ping opacity-0';
+                this.appendChild(heart);
+                setTimeout(() => {
+                    heart.classList.remove('opacity-0');
+                    setTimeout(() => { heart.remove() }, 600);
+                }, 10);
+            });
+        });
+        
+
+        async function savePost(button) {
+            // Get the postId from data attribute
+            const postId = button.getAttribute('data-post-id');
+            if (!postId) {
+                console.error("Post ID is missing");
+                return;
+            }
+        
+            const icon = button.querySelector('i');
+            
+            // Optimistically update UI first
+            const wasSaved = icon.classList.contains("fas");
+            icon.classList.toggle("fas", !wasSaved);
+            icon.classList.toggle("far", wasSaved);
+            
+            try {
+                const response = await fetch("/save-post", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        id: postId,
+                        action: wasSaved ? "unsave" : "save"
+                    })
+                });
+        
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        
+                const data = await response.json();
+                
+                if (!data.success) {
+                    // Revert UI if server failed
+                    icon.classList.toggle("fas", wasSaved);
+                    icon.classList.toggle("far", !wasSaved);
+                    console.error("Server error:", data.message);
+                }
+            } catch (error) {
+                // Revert UI on network error
+                icon.classList.toggle("fas", wasSaved);
+                icon.classList.toggle("far", !wasSaved);
+                console.error("Failed to save post:", error);
+            }
+        }
+
+        function sendUID(uid) {
+            fetch("/user", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ uid: uid })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("Received:", data);
+                // you can redirect or update the DOM here
+            });
+        }
+
+        let currentPostId = null;
+        let user_email = null;
+        let image_url = null;
+
+        // Show comments dialog
+        function showComments(postId, url, email) {
+            currentPostId = postId;
+            image_url = url;
+            user_email = email;
+            const dialog = document.getElementById('commentsDialog');
+            dialog.classList.remove('hidden');
+            
+            // Reset states
+            document.getElementById('commentsLoading').classList.remove('hidden');
+            document.getElementById('commentsEmpty').classList.add('hidden');
+            document.getElementById('commentsContainer').querySelectorAll('.comment-item').forEach(el => el.remove());
+            
+            // Load current user's avatar (replace with your actual implementation)
+            // document.getElementById('currentUserAvatar').src = getCurrentUserAvatar();
+            
+            // Load comments
+            fetchComments(postId);
+            
+            // Auto-resize textarea
+            const textarea = document.getElementById('newCommentText');
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                document.getElementById('postCommentBtn').disabled = this.value.trim() === '';
+            });
+        }
+
+        // Fetch comments from server
+        async function fetchComments(postId) {
+            try {
+                // Simulate API delay (remove in production)
+                await new Promise(resolve => setTimeout(resolve, 800));
+                
+                const response = await fetch(`/api/comments?post_id=${postId}`);
+                const comments = await response.json();
+                
+                const container = document.getElementById('commentsContainer');
+                const template = container.querySelector('.comment-template');
+                
+                // Hide loading state
+                document.getElementById('commentsLoading').classList.add('hidden');
+                
+                if (comments.length === 0) {
+                    document.getElementById('commentsEmpty').classList.remove('hidden');
+                    return;
+                }
+                
+                document.getElementById('commentsEmpty').classList.add('hidden');
+                comments.forEach(comment => {
+                    const commentElement = template.cloneNode(true);
+                    commentElement.classList.remove('hidden', 'comment-template');
+                    commentElement.classList.add('comment-item');
+                    
+                    // Fill in data
+                    const likeButton = commentElement.querySelector('.like-btn');
+                    const currentUserId = "{{ user_id }}";
+                    console.log(currentUserId, comment.likes);
+
+                    // Check if comment.likes exists and if currentUserId is a key in it
+                    isLiked = comment.likes && comment.likes.hasOwnProperty(currentUserId);
+                    console.log(isLiked);
+
+                    const likesCount = comment.likes ? Object.keys(comment.likes).length : 0;
+
+                    commentElement.querySelector('.comment-likes-count').textContent = likesCount;
+                    // Update icon classes
+                    const icon = likeButton.querySelector('i');
+                    icon.classList.add(isLiked ? 'fas' : 'far');
+                    icon.classList.remove(isLiked ? 'far' : 'fas');
+
+                    likeButton.setAttribute('onclick', `toggleCommentLike('${comment.id}', '${currentPostId}', this, '${comment.user.id}', '${comment.user.name}')`);
+                    console.log(comment.user);
+
+                    commentElement.querySelector('img').src = comment.user.avatar || 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png';
+                    commentElement.querySelector('img').alt = comment.user.name;
+                    commentElement.querySelector('.font-semibold').textContent = comment.user.name;
+                    commentElement.querySelector('.text-xs').textContent = formatTimeAgo(comment.timestamp);
+                    commentElement.querySelector('p').textContent = comment.content;
+                    
+                    container.appendChild(commentElement);
+                });
+            } catch (error) {
+                document.getElementById('commentsLoading').innerHTML = `
+                    <div class="text-center py-8 text-red-500">
+                        <i class="fas fa-exclamation-circle mr-2"></i>
+                        Failed to load comments
+                    </div>
+                `;
+            }
+        }
+
+        // Helper function to format time (e.g., "2 hours ago")
+        function formatTimeAgo(timestamp) {
+            const seconds = Math.floor((new Date() - new Date(timestamp)) / 1000);
+            const intervals = {
+                year: 31536000,
+                month: 2592000,
+                week: 604800,
+                day: 86400,
+                hour: 3600,
+                minute: 60
+            };
+            
+            for (const [unit, secondsInUnit] of Object.entries(intervals)) {
+                const interval = Math.floor(seconds / secondsInUnit);
+                if (interval >= 1) {
+                    return interval === 1 ? `${interval} ${unit} ago` : `${interval} ${unit}s ago`;
+                }
+            }
+            return 'Just now';
+        }
+
+        function toggleCommentLike(commentId, postId, button, user_id, username) {
+            // Check if the comment is already liked
+            const isLiked = button.querySelector('i').classList.contains('fas');
+
+            console.log(user_id, username);
+        
+            // Toggle the like state
+            if (isLiked) {
+                button.querySelector('i').classList.replace('fas', 'far'); // Change to "unlike"
+                console.log(`Unliked Comment ID: ${commentId}, Post ID: ${postId}`);
+            } else {
+                button.querySelector('i').classList.replace('far', 'fas'); // Change to "like"
+                console.log(`Liked Comment ID: ${commentId}, Post ID: ${postId}`);
+            }
+        
+            // Optionally, send the like/unlike action to the server
+            fetch('/api/toggle-comment-like', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    comment_id: commentId,
+                    post_id: postId,
+                    user_id: user_id,
+                    username: username,
+                    action: isLiked ? 'unlike' : 'like',
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    // Revert the UI if the server action fails
+                    button.querySelector('i').classList.toggle('fas', !isLiked);
+                    button.querySelector('i').classList.toggle('far', isLiked);
+                    console.error('Failed to toggle like:', data.message);
+                }
+            })
+            .catch(error => {
+                // Revert the UI on network error
+                button.querySelector('i').classList.toggle('fas', !isLiked);
+                button.querySelector('i').classList.toggle('far', isLiked);
+                console.error('Error toggling like:', error);
+            });
+        }
+
+        // Post a new comment
+        async function postComment() {
+            const textarea = document.getElementById('newCommentText');
+            const content = textarea.value.trim();
+            if (!content) return;
+            
+            const postBtn = document.getElementById('postCommentBtn');
+            postBtn.disabled = true;
+            postBtn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i> Posting...';
+            
+            try {
+                const response = await fetch('/api/comments', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        post_id: currentPostId,
+                        content: content,
+                        email: user_email,
+                        url: image_url
+                    })
+                });
+                
+                if (response.ok) {
+                    textarea.value = '';
+                    textarea.style.height = 'auto';
+
+                    const container = document.getElementById('commentsContainer');
+                    container.querySelectorAll('.comment-item').forEach(el => el.remove());
+                    document.getElementById('commentsLoading').classList.remove('hidden');
+                    document.getElementById('commentsEmpty').classList.add('hidden');
+
+                    fetchComments(currentPostId); // Refresh comments
+                }
+            } catch (error) {
+                console.error('Error posting comment:', error);
+                alert('Failed to post comment. Please try again.');
+            } finally {
+                postBtn.disabled = false;
+                postBtn.textContent = 'Post';
+            }
+        }
+
+        // Close dialog
+        function closeCommentsDialog() {
+            document.getElementById('commentsDialog').classList.add('hidden');
+            document.getElementById('newCommentText').value = '';
+        }
+
+        // Get current user's avatar (replace with your implementation)
+        function getCurrentUserAvatar() {
+            // This should come from your user session/data
+            return 'https://cdn.pixabay.com/photo/2023/02/18/11/00/icon-7797704_1280.png';
+        }   
+           
+        let start = 0; // Starting index for posts
+        const limit = 10; // Number of posts to fetch per request
+        let isLoading = false; // Prevent multiple simultaneous requests
+
+        // Function to fetch posts
+        async function fetchPosts() {
+            if (isLoading) return; // Prevent multiple requests
+            isLoading = true;
+
+            try {
+                const response = await fetch('/get-posts');
+                const data = await response.json();
+                renderPosts(data.posts);
+
+                if (response.ok && data.posts.length > 0) {
+                    renderPosts(data.posts);
+                    start += limit; // Update the starting index for the next request
+                } else if (data.posts.length === 0) {
+                    console.log("No more posts to load.");
+                }
+            } catch (error) {
+                console.error("Error fetching posts:", error);
+            } finally {
+                isLoading = false;
+            }
+        }
+
+        const currentUserId = "{{ user_id }}"; // inject from Flask
+        const saved_posts_id_list = "{{ saved_posts_id_list }}";
+
+        function renderPosts(posts) {
+            const postsContainer = document.getElementById("postsContainer");
+
+            Object.values(posts).forEach(post => {
+                if (post.privacy === "public") {
+                    const postElement = document.createElement("div");
+                    postElement.classList.add("post-card", "bg-white", "dark:bg-gray-800", "rounded-xl", "shadow", "overflow-hidden", "transition", "duration-300", "post-hover");
+
+                    postElement.innerHTML = `
+                            <div class="post-card mb-6 bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden transition duration-300 post-hover text-black dark:text-white">
+                                <!-- Post Header -->
+                                <div class="flex items-center justify-between p-4">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-10 h-10 rounded-full overflow-hidden">
+                                            <img src="${post.profile_pic}" alt="User" class="w-full h-full object-cover">
+                                        </div>
+                                        <div>
+                                            <a href="/user/${post.username}">${post.username}</a>
+                                            <p class="text-xs text-gray-500 dark:text-gray-400">${formatTimeAgo(post.timestamp)}</p>
+                                        </div>
+                                    </div>
+                                    <div class="relative ml-auto">
+                                        <!-- Three Dots Button -->
+                                        <button id="${post.post_id}" onclick="toggleMenu(this)" class="ml-auto text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white">
+                                            <i class="fas fa-ellipsis-h"></i>
+                                        </button>
+                                        <!-- Dropdown Menu -->
+                                        <div class="hidden absolute right-0 mt-2 w-40 bg-white dark:bg-gray-800 shadow-md rounded-md py-2 z-20">
+                                            <a href="#addstory" onclick="sendPostRequest('addstory', this)" class="block px-4 py-2 text-gray-800 dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">Delete Post</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Post Content -->
+                                ${post.type === "image" ? `
+                                <div class="px-4 pb-3">
+                                    <img loading="lazy" src="${post.media}" alt="image" class="w-full h-auto rounded-lg">
+                                </div>
+                                ` : ""}
+                                ${post.type === "video" ? `
+                                <div style="height: 545px;" class="w-full aspect-square bg-gray-200 overflow-hidden relative">
+                                    <video id="video-${post.post_id}"
+                                        class="w-full h-full"
+                                        playsinline 
+                                        loop>  <!-- Removed the muted attribute -->
+                                        <source src="${post.media}" type="video/mp4">
+                                        Your browser does not support the video tag.
+                                    </video>
+                                    <div class="absolute inset-0 flex items-center justify-center">
+                                        <div id="play-btn-${post.post_id}" class="play-button bg-black bg-opacity-50 rounded-full w-14 h-14 flex items-center justify-center opacity-0 transition-opacity duration-300">
+                                            <i class="fas fa-play text-white text-2xl"></i>
+                                        </div>
+                                    </div>
+                                    <button id="mute-btn-${post.post_id}" class="absolute bottom-2 right-2 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-xs">
+                                        <i class="fas fa-volume-mute"></i> <!-- Changed default icon to volume-up -->
+                                    </button>
+                                </div>
+                                ` : ""}
+
+                                <!-- Post Actions -->
+                                <div class="p-4">
+                                    <div class="flex justify-between mb-2">
+                                        <div class="flex space-x-4">
+                                            <button id="${post.post_id}####${post.user_id}####None" onclick="likepost(this.id), toggleLike(this)" class="like-btn text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                                                ${post.likes && post.likes.hasOwnProperty(currentUserId) ? `<i class="fas fa-heart text-red-500"></i>` : `<i class="far fa-heart"></i>`}
+                                            </button>
+
+                                            <button id="${post.post_id}" onclick="showComments('${post.post_id}', '${post.media}', '${post.user_id}')" class="text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                                                <i class="far fa-comment"></i>
+                                            </button>
+
+                                            <button id="/share/${post.post_id}" onclick="sharePhoto(this.id)" class="text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                                                <i class="far fa-paper-plane"></i>
+                                            </button>
+                                        </div>
+                                        <button data-post-id="${post.post_id}" 
+                                                onclick="savePost(this)" 
+                                                class="bookmark-btn text-2xl text-black dark:text-white hover:text-gray-700 dark:hover:text-gray-300">
+                                            ${saved_posts_id_list.includes(post.post_id) ? `<i class="fas fa-bookmark"></i>` : `<i class="far fa-bookmark"></i>`}
+                                        </button>
+                                    </div>
+
+                                    <!-- Likes -->
+                                    <div class="mb-1">
+                                        <span class="font-semibold likes-count">${post.likes ? Object.keys(post.likes).length : 0}</span> likes
+                                    </div>
+
+                                    <!-- Caption -->
+                                    ${post.type !== "text" ? `
+                                    <div class="mb-1">
+                                        <p><span class="font-semibold">${post.username} </span> ${post.content}</p>
+                                    </div>
+                                    ` : ""}
+
+                                    <!-- Comments -->
+                                    ${post.comments && post.comments.length > 1 ? `
+                                    <div class="mb-1">
+                                        <button class="text-gray-500 dark:text-gray-400 text-sm hover:text-black dark:hover:text-white">
+                                            View all ${post.comments.length} comments
+                                        </button>
+                                    </div>
+                                    ` : ""}
+
+                                    <!-- Time -->
+                                    <div>
+                                        <p class="text-gray-400 text-xs uppercase">${formatTimeAgo(post.timestamp)}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+
+                    postsContainer.appendChild(postElement);
+
+                    // Add event listeners for video controls
+                    if (post.type === "video") {
+                        const videoId = `video-${post.post_id}`;
+                        const video = document.getElementById(videoId);
+                        const muteBtn = document.getElementById(`mute-btn-${post.post_id}`);
+                        const playBtn = document.getElementById(`play-btn-${post.post_id}`);
+                        const container = video.parentElement;
+
+                        // Mute/unmute functionality
+                        muteBtn.addEventListener('click', (e) => {
+                            e.stopPropagation();
+                            video.muted = !video.muted;
+                            muteBtn.innerHTML = video.muted 
+                                ? '<i class="fas fa-volume-mute"></i>' 
+                                : '<i class="fas fa-volume-up"></i>';
+                        });
+
+                        // Play/pause functionality
+                        container.addEventListener('click', () => {
+                            if (video.paused) {
+                                video.play().catch(error => {
+                                    // If autoplay is blocked, mute and try again
+                                    video.muted = true;
+                                    video.play();
+                                    muteBtn.innerHTML = '<i class="fas fa-volume-mute"></i>';
+                                });
+                                playBtn.classList.add('opacity-0');
+                            } else {
+                                video.pause();
+                                playBtn.classList.remove('opacity-0');
+                                playBtn.querySelector('i').className = 'fas fa-play text-white text-2xl';
+                            }
+                        });
+
+                        // Show play button when paused
+                        video.addEventListener('pause', () => {
+                            playBtn.classList.remove('opacity-0');
+                            playBtn.querySelector('i').className = 'fas fa-play text-white text-2xl';
+                        });
+
+                        // Show pause button when playing
+                        video.addEventListener('play', () => {
+                            playBtn.classList.add('opacity-0');
+                        });
+
+                        // Hover effects
+                        container.addEventListener('mouseenter', () => {
+                            if (video.paused) {
+                                playBtn.classList.remove('opacity-0');
+                            }
+                        });
+                        
+                        container.addEventListener('mouseleave', () => {
+                            if (!video.paused) {
+                                playBtn.classList.add('opacity-0');
+                            }
+                        });
+                    }
+                }
+            });
+
+            // Setup intersection observer for newly added videos
+            setupVideoObserver();
+            
+        }
+
+        // Video intersection observer setup
+        function setupVideoObserver() {
+            const options = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.7 // How much of the video needs to be visible (70% in this case)
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target;
+                    const postId = video.id.replace('video-', '');
+                    const playBtn = document.getElementById(`play-btn-${postId}`);
+                    
+                    if (entry.isIntersecting) {
+                        // Video is in view - play it
+                        video.play().catch(error => {
+                            // Autoplay was prevented, mute and try again
+                            video.muted = true;
+                            video.play();
+                            document.getElementById(`mute-btn-${postId}`).innerHTML = '<i class="fas fa-volume-mute"></i>';
+                        });
+                        if (playBtn) playBtn.classList.add('opacity-0');
+                    } else {
+                        // Video is out of view - pause it
+                        video.pause();
+                        if (playBtn) {
+                            playBtn.classList.remove('opacity-0');
+                            playBtn.querySelector('i').className = 'fas fa-play text-white text-2xl';
+                        }
+                    }
+                });
+            }, options);
+
+            // Observe all video elements
+            document.querySelectorAll('video').forEach(video => {
+                observer.observe(video);
+                
+                // Reset when video ends
+                video.addEventListener('ended', () => {
+                    video.currentTime = 0;
+                    video.play();
+                });
+            });
+        }
+
+        // Toggle play/pause for video (called from onclick in HTML)
+        function toggleplay_reel(id) {
+            const video = document.getElementById(id);
+            const postId = id.replace('video-', '');
+            const playBtn = document.getElementById(`play-btn-${postId}`);
+            
+            if (video.paused) {
+                video.play().catch(error => {
+                    // If autoplay is blocked, mute and try again
+                    video.muted = true;
+                    video.play();
+                    document.getElementById(`mute-btn-${postId}`).innerHTML = '<i class="fas fa-volume-mute"></i>';
+                });
+                if (playBtn) playBtn.classList.add('opacity-0');
+            } else {
+                video.pause();
+                if (playBtn) {
+                    playBtn.classList.remove('opacity-0');
+                    playBtn.querySelector('i').className = 'fas fa-play text-white text-2xl';
+                }
+            }
+        }
+
+
+
+
+
+
+        // Infinite scrolling logic
+        window.addEventListener("scroll", () => {
+            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
+
+            if (scrollTop + clientHeight >= scrollHeight - 200) {
+                fetchPosts(); // Fetch next set of posts when near the bottom
+            }
+        });
+
+        // Initial fetch
+        document.addEventListener("DOMContentLoaded", fetchPosts);
+
+
+
+        function openStoryUploadDialog() {
+            document.getElementById('storyUploadDialog').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeStoryUploadDialog() {
+            document.getElementById('storyUploadDialog').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
+        function uploadStory() {
+            const fileInput = document.getElementById('storyFileInput');
+            const file = fileInput.files[0];
+        
+            if (!file) {
+                alert('Please select an image or video to upload.');
+                return;
+            }
+        
+            const formData = new FormData();
+            formData.append('story', file);
+        
+            // Determine media type and include it in the form data
+            const mediaType = file.type.startsWith('video/') ? 'video' : 'image';
+            formData.append('media_type', mediaType);
+        
+            fetch('/upload-story', {
+                method: 'POST',
+                body: formData,
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Story uploaded successfully!');
+                    closeStoryUploadDialog();
+                    window.location.href = '/';
+                    // Optionally, refresh the stories section
+                } else {
+                    alert('Failed to upload story. Please try again.');
+                }
+            })
+            .catch(error => {
+                console.error('Error uploading story:', error);
+                alert('An error occurred. Please try again.');
+            });
+        }
+
+
+        function previewStory() {
+            const fileInput = document.getElementById('storyFileInput');
+            const file = fileInput.files[0];
+            const storyPreview = document.getElementById('storyPreview');
+            const videoPreview = document.getElementById('videoPreview');
+            const imagePreview = document.getElementById('imagePreview');
+            const editingControls = document.getElementById('editingControls');
+        
+            if (!file) {
+                storyPreview.classList.add('hidden');
+                editingControls.classList.add('hidden');
+                return;
+            }
+        
+            const fileURL = URL.createObjectURL(file);
+        
+            if (file.type.startsWith('video/')) {
+                videoPreview.src = fileURL;
+                videoPreview.classList.remove('hidden');
+                imagePreview.classList.add('hidden');
+            } else if (file.type.startsWith('image/')) {
+                imagePreview.src = fileURL;
+                imagePreview.classList.remove('hidden');
+                videoPreview.classList.add('hidden');
+            }
+        
+            storyPreview.classList.remove('hidden');
+            editingControls.classList.remove('hidden');
+        }
+        
+        function applyFilters() {
+            const brightness = document.getElementById('brightnessControl').value;
+            const contrast = document.getElementById('contrastControl').value;
+            const additionalFilter = document.getElementById('additionalFilters').value;
+            const imagePreview = document.getElementById('imagePreview');
+            const videoPreview = document.getElementById('videoPreview');
+        
+            let filter = '';
+        
+            if (additionalFilter === 'none') {
+                // Reset to original if no filter is selected
+                filter = 'none';
+            } else {
+                // Apply filters
+                filter = `brightness(${brightness}%) contrast(${contrast}%) ${additionalFilter}`;
+            }
+        
+            if (!imagePreview.classList.contains('hidden')) {
+                imagePreview.style.filter = filter;
+            }
+        
+            if (!videoPreview.classList.contains('hidden')) {
+                videoPreview.style.filter = filter;
+            }
+        }
+
+
+        function toggleplay_reel(id) {
+            const video = document.getElementById(id);
+
+            if (video.paused) {
+                video.play();
+            } else {
+                video.pause();
+            }
+        }
+
+        
+
+        function resetFilters() {
+            document.getElementById('brightnessControl').value = 100;
+            document.getElementById('contrastControl').value = 100;
+            document.getElementById('additionalFilters').value = 'none';
+            applyFilters();
+        }
+
+        const storyProgressBar = document.getElementById('storyProgressBar');
+        const storyVideo = document.getElementById('storyVideo');
+
+        storyVideo.addEventListener('timeupdate', () => {
+            const progress = (storyVideo.currentTime / storyVideo.duration) * 100;
+            storyProgressBar.style.width = `${progress}%`;
+        });
+
+
+
+
+        function openStoryupdatesDialog(username, storyTime, viewers, views) {
+            // Populate the dialog with story details
+            document.getElementById('storyUsernameDetails').textContent = username;
+            document.getElementById('storyViewsCount').textContent = views;
+            document.getElementById('viewersCount').textContent = `${views} viewers`;
+            document.getElementById('storyTimeAgo').textContent = formatTimeAgo(storyTime);
+        
+            // Populate the viewers dropdown
+            populateViewersDropdown(viewers);
+        
+            // Show the dialog
+            document.getElementById('storyUpdatesDialog').classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeStoryUpdatesDialog() {
+            document.getElementById('storyUpdatesDialog').classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        }
+        
+        async function deleteStory(username, user_id) {
+            if (confirm('Are you sure you want to delete this story?')) {
+                const response = await fetch('/delete-story', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username: username, user_id: user_id })
+                });
+                const data = await response.json(); 
+                if (data.success) {
+                    alert('Story deleted successfully!');
+                    closeStoryUpdatesDialog();
+                    window.location.href = '/';
+                } else {
+                    alert('Failed to delete story. Please try again.');
+                }
+            }
+        }
+        
+        function toggleViewersDropdown() {
+            const dropdown = document.getElementById('viewersDropdown');
+            const icon = document.getElementById('dropdownIcon');
+            dropdown.classList.toggle('hidden');
+            icon.classList.toggle('fa-chevron-down');
+            icon.classList.toggle('fa-chevron-up');
+        }
+
+        function populateViewersDropdown(viewersArray) {
+            const dropdown = document.getElementById('viewersDropdown');
+            dropdown.innerHTML = ''; // Clear previous viewers
+        
+            if (!Array.isArray(viewersArray) || viewersArray.length === 0) return;
+        
+            const viewersObject = viewersArray[0]; // The first (and only) object in array
+            const viewers = Object.values(viewersObject); // Convert dynamic keys to array
+        
+            viewers.forEach(viewer => {
+                const listItem = document.createElement('li');
+                listItem.className = 'px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center space-x-3';
+                listItem.innerHTML = `
+                    <img src="${viewer.profile_pic}" alt="${viewer.username}" class="w-8 h-8 rounded-full">
+                    <span class="text-sm text-gray-700 dark:text-gray-300">${viewer.username}</span>
+                `;
+                dropdown.appendChild(listItem);
+            });
+        }
+        
+        
+        // Add this to your script section
+        function setupVideoObserver() {
+            const options = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.7 // How much of the video needs to be visible (70% in this case)
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    const video = entry.target;
+                    if (entry.isIntersecting) {
+                        // Video is in view - play it
+                        video.play().catch(error => {
+                            // Autoplay was prevented, mute and try again
+                            video.muted = true;
+                            video.play();
+                        });
+                    } else {
+                        // Video is out of view - pause it
+                        video.pause();
+                    }
+                });
+            }, options);
+
+            // Observe all video elements
+            document.querySelectorAll('video').forEach(video => {
+                observer.observe(video);
+                
+                // Also pause when video ends
+                video.addEventListener('ended', () => {
+                    video.currentTime = 0;
+                });
+            });
+        }
+
+        // Call this after posts are loaded
+        document.addEventListener("DOMContentLoaded", () => {
+            fetchPosts().then(setupVideoObserver);
+        });
+        
+    </script>
+</body>
+</html>
