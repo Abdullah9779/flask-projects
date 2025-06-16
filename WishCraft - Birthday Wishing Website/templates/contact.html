@@ -1,0 +1,31 @@
+{% extends "index.html" %}
+{% block title %}Contact{% endblock %}
+{% block body %}
+
+<div class="relative flex min-h-screen flex-col justify-center overflow-hidden bg-gray-50 py-6 sm:py-12">
+  <div class="bg-white max-w-4xl mx-auto w-full shadow-lg rounded-lg p-6 sm:p-10">
+    <h2 class="mb-6 font-bold text-3xl sm:text-4xl text-blue-900 relative before:block before:absolute before:bg-sky-300 before:content-[''] before:w-20 before:h-1 before:-skew-y-3 before:-bottom-2">Enter Contact</h2>
+    <form action="/contact" method="POST">
+      
+      <div class="grid gap-6 mb-6 grid-cols-1 sm:grid-cols-2">
+        <input class="py-3 px-4 bg-white rounded-full border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-xs" type="text" name="first_name" placeholder="First Name" required>
+        <input class="py-3 px-4 bg-white rounded-full border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-xs" type="text" name="last_name" placeholder="Last Name" required>
+      </div>
+      
+      <div class="grid gap-6 mb-6 grid-cols-1 sm:grid-cols-2">
+        <input class="py-3 px-4 bg-white rounded-full border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-xs" type="email" name="email" placeholder="Email Address" required>
+        <input class="py-3 px-4 bg-white rounded-full border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-xs" type="text" name="subject" placeholder="Subject" required>
+      </div>
+      
+      <div class="mb-6">
+        <textarea class="w-full rounded-2xl border border-gray-300 focus:ring-2 focus:ring-blue-500 outline-none placeholder:text-xs px-4 py-3" placeholder="Enter Message" name="message" rows="6" required></textarea>
+      </div>
+      
+      <div class="flex justify-center">
+        <button type="submit" class="rounded-full bg-blue-900 text-white font-bold py-3 px-6 min-w-40 hover:bg-blue-800 transition-all">Send</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+{% endblock %}

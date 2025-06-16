@@ -1,0 +1,31 @@
+{% extends "index.html" %}
+{% block title %}Path{% endblock %}
+{% block body %}
+
+<div class="flex items-center justify-center min-h-screen bg-gradient-to-r from-indigo-500 to-pink-500 p-6">
+    <div class="bg-white p-10 rounded-3xl shadow-xl text-center max-w-md border border-gray-300">
+        <h1 class="text-4xl font-extrabold mb-4 text-gray-900 drop-shadow-lg">Copy Template Url</h1>
+        <p class="text-gray-600 mb-6 text-lg">Share the Url to Wish Someone</p>
+
+        <div class="flex items-center border border-gray-300 rounded-lg overflow-hidden">
+            <input id="filePath" type="text" value="{{ path }}"
+                class="w-full px-4 py-3 text-gray-800 focus:outline-none" readonly>
+            <button onclick="copyPath()"
+                class="bg-gradient-to-r from-pink-500 to-indigo-500 text-white px-4 py-3 font-semibold transition-transform duration-300 hover:scale-110 active:scale-95">
+                📋 Copy
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function copyPath() {
+        var copyText = document.getElementById("filePath");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        alert("Path copied to clipboard!");
+    }
+</script>
+
+{% endblock %}

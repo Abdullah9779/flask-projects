@@ -1,0 +1,59 @@
+{% extends "index.html" %}
+{% block title %}Home{% endblock %}
+{% block body %}
+
+<!-- Ad -->
+<div class="w-full flex justify-center mt-4">
+    <script type="text/javascript">
+        atOptions = {
+            'key': '9ddea7f156c60fc23fb52c64c91c6286',
+            'format': 'iframe',
+            'height': 90,
+            'width': 728,
+            'params': {}
+        };
+    </script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/9ddea7f156c60fc23fb52c64c91c6286/invoke.js"></script>
+</div>
+
+<div class="container mx-auto text-center py-10">
+    <div class="flex flex-col items-center text-center py-16 px-6 bg-gradient-to-r from-pink-100 to-blue-100">
+        <h1 class="text-5xl font-extrabold text-gray-800">
+            Create Stunning
+            <span class="text-pink-500">Wishes cards</span>
+            in Seconds! 🎉
+        </h1>
+        <p class="mt-4 text-lg text-gray-600">
+            Wish someone birthday with a unique style.
+        </p>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-8 px-4">
+        {% for template in templates %}
+        <a href="{{ url_for('view', template_number=template.id) }}" class="block transform transition hover:scale-105 hover:shadow-xl">
+            <div class="bg-white rounded-lg shadow-lg p-4">
+                <img src="{{ template.image }}" alt="{{ template.name }}" class="rounded-md w-full">
+                <h3 class="text-xl font-bold mt-3">{{ template.name }}</h3>
+                <p class="text-gray-600 text-sm mt-2">{{ template.desc }}</p>
+            </div>
+        </a>
+        {% endfor %}
+        </div>
+    </div>
+</div>
+
+
+<!-- Ad -->
+<div class="w-full flex justify-center mt-4">
+    <script type="text/javascript">
+        atOptions = {
+            'key': '9ddea7f156c60fc23fb52c64c91c6286',
+            'format': 'iframe',
+            'height': 90,
+            'width': 728,
+            'params': {}
+        };
+    </script>
+    <script type="text/javascript" src="//www.highperformanceformat.com/9ddea7f156c60fc23fb52c64c91c6286/invoke.js"></script>
+</div>
+
+{% endblock %}

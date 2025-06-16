@@ -1,0 +1,136 @@
+{% extends "index.html" %}
+{% block title %}Create Template - {{ template_number }}{% endblock %}
+{% block body %}
+
+<div class="max-w-lg mx-auto bg-white shadow-lg rounded-lg p-6 mt-6">
+    <h2 class="text-2xl font-semibold text-gray-800 text-center mb-4">Create a Birthday Wish</h2>
+
+    <form id="template-form" action="/create-template/{{ template_number }}" method="POST" enctype="multipart/form-data">
+        <!-- Template Code -->
+        <div class="mb-4">
+            <label for="code" class="block text-gray-700 font-medium">
+                Create your Template Id (Don't share it)
+            </label>
+            <input type="text" id="code" name="code" required minlength="12"
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+            <p id="error-message" class="text-red-500 text-sm mt-1 hidden">
+                Minimum 12 characters required.
+            </p>
+        </div>
+
+        <!-- Name -->
+        <div class="mb-4">
+            <label for="name" class="block text-gray-700 font-medium">Enter Name</label>
+            <input type="text" id="name" name="name" required
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- Full Date -->
+        <div class="mb-4">
+            <label for="date" class="block text-gray-700 font-medium">Enter Birthday Date</label>
+            <input type="date" id="date" name="date" required
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- Wish Message -->
+        <div class="mb-4">
+            <label for="wish" class="block text-gray-700 font-medium">Enter Your Wish/Message</label>
+            <textarea id="wish" name="wish" rows="3" required
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"></textarea>
+        </div>
+
+        <!-- Upload Images -->
+        <div class="mb-4">
+            <label class="block text-gray-700 font-medium">Upload Images</label>
+            <input type="file" name="images" accept="image/*" multiple required
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
+        </div>
+
+        <!-- Select a Song -->
+        <div class="mb-4">
+            <label for="song" class="block text-gray-700 font-medium">Select a Song</label>
+            <select id="song" name="song" required
+                class="w-full mt-1 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                onchange="updateSong()">
+                <option value="" disabled selected>Select a song</option>
+                <option value="https://firebasestorage.googleapis.com/v0/b/buzzchat-user-data.appspot.com/o/My%20site%2Fsongs%2FHAPPY%20Birthday%20Song%2C%20Happy%20Birthday%20to%20You%20-%20Happy%20Birthday%20Song%20with%20Names.mp3?alt=media&token=04b8fed8-5cc3-4c1f-9e31-bf9aae3a4220">🎵 Happy Birthday to you</option>
+                <option value="https://firebasestorage.googleapis.com/v0/b/buzzchat-user-data.appspot.com/o/My%20site%2Fsongs%2FAww%20Tera%20Happy%20BdayABCD%202%20Varun%20Dhawan%20Shraddha%20Kapoor%20Sachin%20-%20Jigar%20D.Soldierz%20%20Birthday%20song%20-%20Zee%20Music%20Company.mp3?alt=media&token=3f2e35ea-3b62-4dff-a9f4-4e6c88f3de0b">🎵 Aww Tera Happy Birthday</option>
+                <option value="https://firebasestorage.googleapis.com/v0/b/buzzchat-user-data.appspot.com/o/My%20site%2Fsongs%2FHappy%20Birthday%20%20Disco%20Singh%20%20Diljit%20Dosanjh%20%20Surveen%20Chawla%20%20Latest%20Punjabi%20Songs%202024%20-%20Speed%20Records.mp3?alt=media&token=b19dd3fd-9e88-4790-9a45-5173aa947faf">🎵 Tara Happy Birthday Ta</option>
+                <option value="https://firebasestorage.googleapis.com/v0/b/buzzchat-user-data.appspot.com/o/My%20site%2Fsongs%2FHappy%20Birthday%20To%20You%20Ji%20-%20Funny%20Hindi%20Birthday%20Song%20(Part%201)%20-%20Funzoa%20Mimi%20Teddy%2C%20Krsna%20Solo%20-%20Funzoa.mp3?alt=media&token=c78f5348-9090-4162-8126-50b0350e5c6d">🎵 Happy Birthday To you ji</option>
+                <option value="https://firebasestorage.googleapis.com/v0/b/buzzchat-user-data.appspot.com/o/My%20site%2Fsongs%2FSal%20bhar%20me%20sabse%20pyara%20hota%20hai%20ek%20din_Happy%20Birthday%20Song_%20what's%20aap%20status%20_by%20juli%20parween%20-%20Juli%20Parween.mp3?alt=media&token=c4e6e59c-cb1a-46e6-9a16-743b17f89783">🎵 Sal bhar me sabse pyara hota hai ek din</option>
+            </select>
+        </div>
+
+        <!-- Preview Song -->
+        <div class="mb-4 flex items-center space-x-2">
+            <button type="button" id="previewBtn" onclick="togglePlay()" disabled
+                class="bg-blue-500 text-white px-4 py-2 rounded-lg">
+                ▶️ Preview Song
+            </button>
+            <audio id="audioPlayer"></audio>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit"
+            class="w-full bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 hover:bg-gradient-to-br text-white font-medium rounded-lg px-5 py-2.5">
+            🎉 Create Template
+        </button>
+    </form>
+</div>
+
+<script>
+    function updateSong() {
+        let songSelect = document.getElementById("song");
+        let audioPlayer = document.getElementById("audioPlayer");
+        let previewBtn = document.getElementById("previewBtn");
+
+        if (songSelect.value) {
+            audioPlayer.src = songSelect.value;
+            previewBtn.disabled = false;
+        } else {
+            previewBtn.disabled = true;
+        }
+    }
+
+    function togglePlay() {
+        let audioPlayer = document.getElementById("audioPlayer");
+        let previewBtn = document.getElementById("previewBtn");
+
+        if (audioPlayer.paused) {
+            audioPlayer.play();
+            previewBtn.innerText = "⏸️ Pause Song";
+        } else {
+            audioPlayer.pause();
+            previewBtn.innerText = "▶️ Preview Song";
+        }
+    }
+
+    document.getElementById("template-form").addEventListener("submit", function(event) {
+        let inputField = document.getElementById("code");
+        let errorMessage = document.getElementById("error-message");
+
+        if (inputField.value.length < 12) {
+            errorMessage.classList.remove("hidden"); // Show error message
+            inputField.classList.add("border-red-500"); // Add red border
+            event.preventDefault(); // Stop form submission
+        } else {
+            errorMessage.classList.add("hidden"); // Hide error message
+            inputField.classList.remove("border-red-500"); // Remove red border
+        }
+    });
+
+    document.getElementById("code").addEventListener("input", function() {
+        let inputField = this;
+        let errorMessage = document.getElementById("error-message");
+
+        if (inputField.value.length < 12) {
+            errorMessage.classList.remove("hidden"); // Show error message
+            inputField.classList.add("border-red-500"); // Add red border
+        } else {
+            errorMessage.classList.add("hidden"); // Hide error message
+            inputField.classList.remove("border-red-500"); // Remove red border
+        }
+    });
+</script>
+
+{% endblock %}
