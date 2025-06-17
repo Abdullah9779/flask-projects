@@ -582,7 +582,6 @@ def create_post():
         
         if request.method == "POST":
             data = request.get_json()
-            print(data)
             post_content = data.get('content')
             privacy = data.get('privacy')
             post_type = data.get("type")
