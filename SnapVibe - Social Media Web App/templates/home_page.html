@@ -1313,6 +1313,13 @@
                                     <img loading="lazy" src="${post.media}" alt="image" class="w-full h-auto rounded-lg">
                                 </div>
                                 ` : ""}
+
+                                ${post.type == "text" ? `
+                                <div class="mb-1 p-4">
+                                    <p><span class="font-semibold">${post.username} </span>${post.content}</p>
+                                </div>
+                            ` : ""}
+                            
                                 ${post.type === "video" ? `
                                 <div style="height: 545px;" class="w-full aspect-square bg-gray-200 overflow-hidden relative">
                                     <video id="video-${post.post_id}"
