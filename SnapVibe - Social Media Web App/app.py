@@ -1274,7 +1274,7 @@ def following_user():
             }, token=token)
             
             
-            db.child("notifications").child(target_user_id).child(str(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))).set({"username": username_to_follow, "user_id":target_user_id, "timestamp": str(datetime.datetime.now()), "notifications": "Follow"}, token=token)
+            db.child("notifications").child(target_user_id).child(str(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))).set({"username": local_username, "user_id":local_id, "timestamp": str(datetime.datetime.now()), "notifications": "Follow"}, token=token)
             db.child("is_new_notification").child(target_user_id).set({"is_new_notification":True}, token=token)
 
             response = make_response(jsonify({
@@ -1291,7 +1291,7 @@ def following_user():
             db.child("users").child(target_user_id).child("followers").child(local_id).remove(token=token)
             
             
-            db.child("notifications").child(target_user_id).child(str(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))).set({"username": username_to_follow, "user_id":target_user_id, "timestamp": str(datetime.datetime.now()), "notifications": "Unfollow"}, token=token)
+            db.child("notifications").child(target_user_id).child(str(datetime.datetime.now().strftime("%Y%m%d_%H%M%S"))).set({"username": local_username, "user_id":local_id, "timestamp": str(datetime.datetime.now()), "notifications": "Unfollow"}, token=token)
             db.child("is_new_notification").child(target_user_id).set({"is_new_notification":True}, token=token)
 
             response = make_response(jsonify({
