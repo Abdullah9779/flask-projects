@@ -1,4 +1,5 @@
 Flask
+typing
 firebase-admin
 pyrebase4
 requests
