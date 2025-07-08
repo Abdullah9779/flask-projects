@@ -157,9 +157,9 @@ def contact():
 
         if first_name and last_name and email and subject and message:
 
-            recipient_email = "abdullahtariq977961@gmail.com"
-            email1 = "abdullahtariq97799@gmail.com"
-            sender_password = "usniwjosjqmanvqi"
+            recipient_email = "your-email@email.com"
+            email1 = "to-send-mail@email.com"
+            sender_password = "your-email-code"
 
             body = f"""
 First Name : {first_name}
