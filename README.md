@@ -19,4 +19,10 @@ This repo includes Flask examples covering:
 - 🔐 User authentication (login/signup/logout)  
 - 🌐 REST APIs  
 - 📦 Flask extensions (Flask-WTF, Flask-Login, Flask-Mail, etc.)  
-- ⚙️ Deployment-ready structure  
+- ⚙️ Deployment-ready structure
+
+---
+
+## Screenshorts
+
+Snapvibe screenshots in Snapvibe Screenshots folder.
