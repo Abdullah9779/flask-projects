@@ -21,8 +21,4 @@ This repo includes Flask examples covering:
 - 📦 Flask extensions (Flask-WTF, Flask-Login, Flask-Mail, etc.)  
 - ⚙️ Deployment-ready structure
 
----
 
-## Screenshorts
-
-Snapvibe screenshots in Snapvibe Screenshots folder.
