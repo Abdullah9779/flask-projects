@@ -21,16 +21,8 @@ import uuid
 
 app = Flask(__name__)
 
-firebaseConfig = {
-  "apiKey": "",
-  "authDomain": "",
-  "databaseURL": "",
-  "projectId": "",
-  "storageBucket": "",
-  "messagingSenderId": "",
-  "appId": "",
-  "measurementId": ""
-}
+with open("config.json", "r") as file:
+  firebaseConfig = file.read()
 
 firebase = pyrebase.initialize_app(firebaseConfig)
 db = firebase.database()
@@ -1714,4 +1706,5 @@ def change_password():
 
 if __name__ == '__main__':
     app.run(debug=True)
+
 
