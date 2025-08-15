@@ -1,7 +1,3 @@
-<p align="center">
-  <img src="https://yourdomain.com/static/icons/snapvibe-logo.png" alt="SnapVibe Logo" width="150"/>
-</p>
-
 <h1 align="center">SnapVibe</h1>
 <p align="center"><em>Capture. Share. Connect.</em></p>
 
@@ -152,4 +148,5 @@ This change must be done throughout the project to ensure proper functionality.
 ---
 
 **LICENSE:** [MIT License](https://github.com/Abdullah9779/flask-projects/blob/main/LICENSE)
+
 
