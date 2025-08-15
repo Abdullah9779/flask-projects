@@ -37,17 +37,23 @@ With **SnapVibe**, you can upload your favorite moments, follow your friends, an
 ## 📷 SnapVibe Screenshots  
 
 <p>
-  <a href="https://yourdomain.com/static/pictures/snapvibe-pic-1.png" target="_blank" rel="noopener noreferrer">
-    <img src="https://yourdomain.com/static/pictures/snapvibe-pic-1.png" alt="SnapVibe Image 1" width="400" style="margin-right:10px;" />
+  <a href="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/1.png" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/1.png" alt="SnapVibe Image 1" width="400" style="margin-right:10px;" />
   </a>
-  <a href="https://yourdomain.com/static/pictures/snapvibe-pic-2.png" target="_blank" rel="noopener noreferrer">
-    <img src="https://yourdomain.com/static/pictures/snapvibe-pic-2.png" alt="SnapVibe Image 2" width="400" style="margin-right:10px;" />
+  <a href="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/2.png" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/2.png" alt="SnapVibe Image 2" width="400" style="margin-right:10px;" />
   </a>
-  <a href="https://yourdomain.com/static/pictures/snapvibe-pic-3.png" target="_blank" rel="noopener noreferrer">
-    <img src="https://yourdomain.com/static/pictures/snapvibe-pic-3.png" alt="SnapVibe Image 3" width="400" style="margin-right:10px;" />
+  <a href="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/3.png" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/3.png" alt="SnapVibe Image 3" width="400" style="margin-right:10px;" />
   </a>
-  <a href="https://yourdomain.com/static/pictures/snapvibe-pic-4.png" target="_blank" rel="noopener noreferrer">
-    <img src="https://yourdomain.com/static/pictures/snapvibe-pic-4.png" alt="SnapVibe Image 4" width="400" />
+  <a href="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/4.png" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/4.png" alt="SnapVibe Image 4" width="400" />
+  </a>
+  <a href="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/5.png" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/5.png" alt="SnapVibe Image 5" width="400" />
+  </a>
+  <a href="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/6.png" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/Abdullah9779/flask-projects/refs/heads/main/SnapVibe%20-%20Social%20Media%20Web%20App/Snapvibe%20Screenshorts/6.png" alt="SnapVibe Image 6" width="400" />
   </a>
 </p>
 
