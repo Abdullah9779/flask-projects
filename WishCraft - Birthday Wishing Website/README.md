@@ -1,6 +1,6 @@
 <p align="center">
   <!-- Replace with your actual logo path if available -->
-  <img src="https://firebasestorage.googleapis.com/v0/b/buzzchat-user-data.appspot.com/o/My%20site%2Fsimple_wc_logo.jpeg?alt=media&token=6bc37091-ae55-4f78-bb68-1bb6283a7980" alt="WishCraft Logo" width="150"/>
+  <img src="https://dotcoder.site/static/wishcraft/icon/wishcraft-logo.png" alt="WishCraft Logo" width="150"/>
 </p>
 
 <h1 align="center">WishCraft</h1>
@@ -40,7 +40,7 @@ Create countdowns, personalized cards, and export clean **HTML** you can embed a
 ## 🛠 Technologies Used
 
 - **Frontend:** HTML, Tailwind CSS, Vanilla CSS  
-- **Backend:** Python (Flask)  
+- **Backend:** Python (Flask) (Live version is built using Django.)
 - **Storage:** None (stateless by default)
 
 ---
