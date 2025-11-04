@@ -13,7 +13,7 @@
 
 Create countdowns, personalized cards, and export clean **HTML** you can embed anywhere.
 
-🌐 **Website:** [https://abdullahtariq.pythonanywhere.com](https://abdullahtariq.pythonanywhere.com)
+🌐 **Website:** [https://wishcraft.pythonanywhere.com](https://wishcraft.pythonanywhere.com)
 
 ---
 
